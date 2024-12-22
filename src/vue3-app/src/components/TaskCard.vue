@@ -1,6 +1,6 @@
-<script lang="ts">
+<script lang="ts" setup>
 import { Task } from '../types/Task';  // Import the Task interface
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits } from 'vue';
 
 defineProps<{
     task: Task
