@@ -13,6 +13,11 @@ onMounted(async () => {
     await getTasks();
 });
 
+const addTask = () => {
+    debounceHandleAddTask(newTask.value);
+    newTask.value = '';
+};
+
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
@@ -31,7 +36,7 @@ onMounted(async () => {
                             class="form-control form-control-lg padding-right-lg"
                             placeholder="+ Add new task. Press enter to save."
                             v-model="newTask"
-                            @keyup.enter="debounceHandleAddTask(newTask)"
+                            @keyup.enter="addTask"
                         />
                     </div>
                     <!-- List of tasks -->
