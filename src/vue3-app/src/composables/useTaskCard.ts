@@ -1,16 +1,19 @@
 import { Ref, ref } from 'vue';
 import type { Task } from '../types/Task';
 import TaskService from '../services/TaskService';
+import { debounce } from 'lodash-es';
 
 interface ApiResponse {
     data?: Task[];
 }
 
 export default function useTaskCard(tasks: Ref<Task[]>) {
+    if (!tasks.value) {
+        tasks.value = [];
+    }
     const loading = ref(false);
     const error = ref<string | null>(null);
     const retryCount = ref(0);
-
     const toggleTaskCompletion = async (task: Task): Promise<void> => {
         const originalState = task.is_completed;  // Store original state
         try {
@@ -29,15 +32,22 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
             loading.value = false;  // End loading
         }
     };
-
+    // Wrap the function with debounce
+    const debouncedToggleTaskCompletion = debounce(toggleTaskCompletion, 300);
     const handleDeleteTask = async (task: Task): Promise<void> => {
+        const deletedTaskIndex = tasks.value.findIndex((t) => t.id === task.id);
+        if (deletedTaskIndex === -1) {
+            return;
+        }
+        const deletedTask = tasks.value[deletedTaskIndex];
         try {
             loading.value = true;  // Start loading
-            await TaskService.delete(task.id);  // Delete task from backend
             tasks.value = tasks.value.filter((t) => t.id !== task.id);  // Update tasks array locally
+            await TaskService.delete(task.id);  // Delete task from backend
         } catch (err: any) {
             console.error('Failed to delete task:', err);
             error.value = 'Failed to delete task';  // Set error message
+            tasks.value.splice(deletedTaskIndex, 0, deletedTask);  // Reset tasks array locally
         } finally {
             loading.value = false;  // End loading
         }
@@ -54,6 +64,8 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
                 taskData = response;
             }
             tasks.value = taskData;
+            error.value = null;  // Reset error message
+            retryCount.value = 0;  // Reset retry count
         } catch (err: any) {
             console.error('Failed to fetch tasks:', err);
             error.value = 'Failed to load tasks';  // Set error message
@@ -70,7 +82,7 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
     };
 
     return {
-        toggleTaskCompletion,
+        debouncedToggleTaskCompletion,
         handleDeleteTask,
         getTasks,
         tasks,
