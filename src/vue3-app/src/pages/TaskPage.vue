@@ -5,7 +5,7 @@ import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/TaskCard.vue'
 
 const tasks = ref<Task[]>([]);
-const { toggleTaskCompletion, handleDeleteTask, getTasks, loading, error } = useTaskCard(tasks);
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, loading, error } = useTaskCard(tasks);
 
 // Load tasks with error handling
 onMounted(async () => {
@@ -33,7 +33,7 @@ onMounted(async () => {
                     </div>
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
-                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="toggleTaskCompletion" @delete-task="handleDeleteTask" />
+                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />
                     </div>
                     <!-- No tasks message -->
                     <div v-else>
