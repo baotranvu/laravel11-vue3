@@ -98,8 +98,6 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         } catch (err: any) {
             console.error('Failed to add task:', err);
             error.value = 'Failed to add task';  // Set error message
-            // Reset tasks array locally
-            tasks.value = tasks.value.filter((t) => t.id !== undefined);
         } finally {
             loading.value = false;  // End loading
         }
