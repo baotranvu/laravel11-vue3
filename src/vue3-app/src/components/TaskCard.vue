@@ -1,22 +1,16 @@
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Task } from '../types/Task';  // Import the Task interface
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue'
+import { Task } from '../types/Task'
 
-export default defineComponent({
-  name: 'TaskCard',
-  props: {
-    task: {
-      type: Object as PropType<Task>,  // Type the task prop as Task
-      required: true,
-    },
-    
-  },
-  methods: {
-    toggleTaskCompletion(task: Task) {
-       this.$emit('toggle-task-completion', task);
-    }
-  }
-});
+defineProps<{
+    task: Task
+}>()
+
+const emit = defineEmits(['toggle-task-completion'])
+
+const toggleTaskCompletion = (task: Task) => {
+    emit('toggle-task-completion', task)
+}
 </script>
 
 <template>

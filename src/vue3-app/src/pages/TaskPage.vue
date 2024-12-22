@@ -1,19 +1,43 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import TaskService from '../services/TaskService';
-import { Task,  } from '../types/Task';
+import type { Task } from '../types/Task';
 import TaskCard from '../components/TaskCard.vue';
+
+// Define tasks with explicit type
 const tasks = ref<Task[]>([]);
 
+// Load tasks with error handling
 onMounted(async () => {
-    tasks.value = await TaskService.all();
+    try {
+        tasks.value = await TaskService.all();
+    } catch (error) {
+        console.error('Failed to load tasks:', error);
+        tasks.value = [];
+    }
 });
 
-function toggleTaskCompletion(task: Task) {
-    task.is_completed = !task.is_completed;
-    TaskService.markAsCompleted(task.id);
-}
+// Handle task completion toggle
+const toggleTaskCompletion = async (task: Task): Promise<void> => {
+    try {
+        await TaskService.changeTaskStatus(task.id);
+        tasks.value = tasks.value.map((t) => 
+            t.id === task.id ? { ...t, is_completed: !t.is_completed } : t
+        );
+    } catch (error) {
+        console.error('Failed to toggle task:', error);
+    }
+};
 
+// Handle task deletion
+const handleDeleteTask = async (task: Task): Promise<void> => {
+    try {
+        await TaskService.delete(task.id);
+        tasks.value = tasks.value.filter((t) => t.id !== task.id);
+    } catch (error) {
+        console.error('Failed to delete task:', error);
+    }
+};
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
@@ -30,7 +54,7 @@ function toggleTaskCompletion(task: Task) {
                     </div>
                     <!-- List of tasks -->
                     <div class="mt-4">
-                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="toggleTaskCompletion"/>
+                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="toggleTaskCompletion" @delete-task="handleDeleteTask" />
                     </div>
                 </div>
             </div>
