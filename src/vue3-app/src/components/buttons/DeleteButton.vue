@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import IconTrash from '../icons/IconTrash.vue';
-import { defineEmits, defineProps } from 'vue';
+import { defineEmits } from 'vue';
 import { Task } from '@/types/Task';
 
 defineProps<{
