@@ -53,14 +53,20 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
+    const isTaskArray = (data: unknown): data is Task[] => {
+    return Array.isArray(data) && data.every(item => 
+            typeof item === 'object' && item !== null && 'id' in item
+        );
+    };
+
     const getTasks = async () => {
         try {
             loading.value = true;  // Start loading
             const response = await TaskService.all() as ApiResponse;  // Fetch tasks
             let taskData: Task[] = [];
-            if (Array.isArray(response.data)) {
+            if (isTaskArray(response.data)) {
                 taskData = response.data;
-            } else if (Array.isArray(response)) {
+            } else if (isTaskArray(response)) {
                 taskData = response;
             }
             tasks.value = taskData;
