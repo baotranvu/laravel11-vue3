@@ -1,15 +1,17 @@
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
-import { Task } from '../types/Task'
+<script lang="ts">
+import { Task } from '../types/Task';  // Import the Task interface
 
 defineProps<{
     task: Task
 }>()
 
-const emit = defineEmits(['toggle-task-completion'])
+const emit = defineEmits(['toggle-task-completion', 'delete-task'])
 
 const toggleTaskCompletion = (task: Task) => {
     emit('toggle-task-completion', task)
+}
+const deleteTask = (task: Task) => {
+    emit('delete-task', task)
 }
 </script>
 
