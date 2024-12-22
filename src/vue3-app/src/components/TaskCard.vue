@@ -34,7 +34,7 @@ const toggleTaskCompletion = (task: Task) => {
                 </div>
                 <div class="task-actions">
                     <EditButton/>
-                    <DeleteButton/>
+                    <DeleteButton @delete-task ="deleteTask" :task="task"/>
                 </div>
             </li>
         </ul>
