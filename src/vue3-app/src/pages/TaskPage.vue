@@ -5,7 +5,8 @@ import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/TaskCard.vue'
 
 const tasks = ref<Task[]>([]);
-const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, loading, error } = useTaskCard(tasks);
+const newTask = ref<string>('');
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, loading, error } = useTaskCard(tasks);
 
 // Load tasks with error handling
 onMounted(async () => {
@@ -29,6 +30,8 @@ onMounted(async () => {
                             type="text"
                             class="form-control form-control-lg padding-right-lg"
                             placeholder="+ Add new task. Press enter to save."
+                            v-model="newTask"
+                            @keyup.enter="debounceHandleAddTask(newTask)"
                         />
                     </div>
                     <!-- List of tasks -->

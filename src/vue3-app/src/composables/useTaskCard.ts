@@ -87,10 +87,30 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
+    const handleAddTask = async (name:string): Promise<void> => {
+        try {
+            loading.value = true;  // Start loading
+            const response = await TaskService.create({ name });  // Create task on backend
+            if (response?.id) {
+                tasks.value = [response, ...tasks.value];  // Update tasks array locally
+            }
+            error.value = null;  // Reset error message
+        } catch (err: any) {
+            console.error('Failed to add task:', err);
+            error.value = 'Failed to add task';  // Set error message
+            // Reset tasks array locally
+            tasks.value = tasks.value.filter((t) => t.id !== undefined);
+        } finally {
+            loading.value = false;  // End loading
+        }
+    }
+    const debounceHandleAddTask = debounce(handleAddTask, 300);
+
     return {
         debouncedToggleTaskCompletion,
         handleDeleteTask,
         getTasks,
+        debounceHandleAddTask,
         tasks,
         loading,
         error,
