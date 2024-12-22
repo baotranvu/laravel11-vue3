@@ -41,7 +41,12 @@ const deleteTask = (task: Task) => {
                     >
                         <span :class="{ 'completed': task.is_completed }">{{ task.name }}</span>
                     </div>
-                    <div class="task-date">{{ new Date(task.created_at) }}</div>
+                    <div class="task-date">
+                        {{ new Intl.DateTimeFormat('default', { 
+                            dateStyle: 'medium', 
+                            timeStyle: 'short' 
+                        }).format(new Date(task.created_at)) }}
+                    </div>
                 </div>
                 <div class="task-actions">
                     <EditButton/>
