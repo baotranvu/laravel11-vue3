@@ -80,7 +80,7 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
                 setTimeout(() => {
                     retryCount.value++;
                     getTasks();
-                }, 3000);
+                }, Math.pow(2, retryCount.value) * 1000); // Exponential backoff
             }
         } finally {
             loading.value = false;  // End loading
