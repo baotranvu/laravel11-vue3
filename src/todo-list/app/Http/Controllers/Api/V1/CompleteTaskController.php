@@ -12,7 +12,7 @@ class CompleteTaskController extends Controller
     {
         
         $task = Task::find($request->id);
-        $task->is_completed = true;
+        $task->is_completed = !$task->is_completed;
         $task->save();
 
         return response()->json([
