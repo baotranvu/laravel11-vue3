@@ -1,9 +1,12 @@
-<script lang="ts">
+<script lang="ts" setup>
 import { Task } from '../types/Task';  // Import the Task interface
 
-defineProps<{
-    task: Task
-}>()
+withDefaults(defineProps<{
+    task: Task;
+    disabled?: boolean;
+}>(), {
+    disabled: false
+})
 
 const emit = defineEmits(['toggle-task-completion', 'delete-task'])
 
@@ -16,13 +19,19 @@ const deleteTask = (task: Task) => {
 </script>
 
 <template>
-    <div class="card mt-2">
+    <div 
+        class="card mt-2"
+        :class="{ 'bg-light': task.is_completed }"
+        aria-label="Task card"
+    >
         <ul class="list-group list-group-flush">
             <li class="list-group-item py-3">
                 <div class="d-flex justify-content-start align-items-center">
                     <input
                         class="form-check-input mt-0"
                         type="checkbox"
+                        :disabled="disabled"
+                        aria-label="Task completion checkbox"
                         :checked="task.is_completed"
                         @change="toggleTaskCompletion(task)"
                     />
@@ -32,7 +41,12 @@ const deleteTask = (task: Task) => {
                     >
                         <span :class="{ 'completed': task.is_completed }">{{ task.name }}</span>
                     </div>
-                    <div class="task-date">{{ new Date(task.created_at) }}</div>
+                    <div class="task-date">
+                        {{ new Intl.DateTimeFormat('default', { 
+                            dateStyle: 'medium', 
+                            timeStyle: 'short' 
+                        }).format(new Date(task.created_at)) }}
+                    </div>
                 </div>
                 <div class="task-actions">
                     <EditButton/>
