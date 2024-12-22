@@ -9,6 +9,11 @@ onMounted(async () => {
     tasks.value = await TaskService.all();
 });
 
+function toggleTaskCompletion(task: Task) {
+    task.is_completed = !task.is_completed;
+    TaskService.markAsCompleted(task.id);
+}
+
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
@@ -25,7 +30,7 @@ onMounted(async () => {
                     </div>
                     <!-- List of tasks -->
                     <div class="mt-4">
-                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" />
+                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="toggleTaskCompletion"/>
                     </div>
                 </div>
             </div>
