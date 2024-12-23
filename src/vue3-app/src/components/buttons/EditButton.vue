@@ -5,9 +5,11 @@ interface Props {
     onClick?: () => void;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    onClick: undefined
+});
 
-function handleClick() {
+function handleClick(): void {
     if (props.onClick) {
         props.onClick();
     }

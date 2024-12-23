@@ -50,7 +50,7 @@ const deleteTask = (taskId: number) => {
                 </div>
                 <div class="task-actions">
                     <EditButton/>
-                    <DeleteButton @delete="deleteTask" :itemId="task.id"/>
+                    <DeleteButton @item-delete="deleteTask" :itemId="task.id"/>
                 </div>
             </li>
         </ul>
