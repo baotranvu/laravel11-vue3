@@ -77,9 +77,10 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         try {
             loading.value = true;
             const response = await TaskService.all() as ApiResponse;
-
             if (isTaskArray(response.data)) {
                 tasks.value = response.data;
+            } else if (isTaskArray(response)) {
+                tasks.value = response;
             } else {
                 tasks.value = [];
             }

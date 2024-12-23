@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Task } from '../types/Task';  // Import the Task interface
+import { Task } from '../../types/Task';  // Import the Task interface
 
 withDefaults(defineProps<{
     task: Task;
@@ -45,7 +45,7 @@ const deleteTask = (task: Task) => {
                         {{ new Intl.DateTimeFormat('default', { 
                             dateStyle: 'medium', 
                             timeStyle: 'short' 
-                        }).format(new Date(task.created_at)) }}
+                        }).format(task.created_at ? new Date(task.created_at) : new Date()) }}
                     </div>
                 </div>
                 <div class="task-actions">
