@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
