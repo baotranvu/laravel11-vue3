@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Task } from '../types/Task';  // Import the Task interface
+import { Task } from '../../types/Task';  // Import the Task interface
 
 withDefaults(defineProps<{
     task: Task;
@@ -13,8 +13,8 @@ const emit = defineEmits(['toggle-task-completion', 'delete-task'])
 const toggleTaskCompletion = (task: Task) => {
     emit('toggle-task-completion', task)
 }
-const deleteTask = (task: Task) => {
-    emit('delete-task', task)
+const deleteTask = (taskId: number) => {
+    emit('delete-task', taskId)
 }
 </script>
 
@@ -45,12 +45,12 @@ const deleteTask = (task: Task) => {
                         {{ new Intl.DateTimeFormat('default', { 
                             dateStyle: 'medium', 
                             timeStyle: 'short' 
-                        }).format(new Date(task.created_at)) }}
+                        }).format(task.created_at ? new Date(task.created_at) : new Date()) }}
                     </div>
                 </div>
                 <div class="task-actions">
                     <EditButton/>
-                    <DeleteButton @delete-task ="deleteTask" :task="task"/>
+                    <DeleteButton @delete="deleteTask" :itemId="task.id"/>
                 </div>
             </li>
         </ul>

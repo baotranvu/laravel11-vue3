@@ -52,17 +52,24 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
-    const handleDeleteTask = async (task: Task): Promise<void> => {
+    const handleDeleteTask = async (taskId: number): Promise<void> => {
         if (loading.value) return;
 
-        const deletedTaskIndex = tasks.value.findIndex(t => t.id === task.id);
+        const deletedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
         if (deletedTaskIndex === -1) return;
+
+        if(!confirm('Are you sure you want to delete this task?')) return;
+        
+        if(Number.isInteger(taskId) || taskId < 0){
+            console.error('Invalid task id');
+            return;
+        }
 
         const deletedTask = tasks.value[deletedTaskIndex];
         try {
             loading.value = true;
             tasks.value.splice(deletedTaskIndex, 1);
-            await TaskService.delete(task.id);
+            await TaskService.delete(taskId);
         } catch (err: any) {
             handleError('Failed to delete task', err);
             tasks.value.splice(deletedTaskIndex, 0, deletedTask);
@@ -77,9 +84,10 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         try {
             loading.value = true;
             const response = await TaskService.all() as ApiResponse;
-
-            if (isTaskArray(response.data)) {
-                tasks.value = response.data;
+            if (isTaskArray(response)) {
+                tasks.value = response.sort((a, b) => 
+                    new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
+                );
             } else {
                 tasks.value = [];
             }

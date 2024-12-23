@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import IconTrash from '../icons/IconTrash.vue';
-import { defineEmits, defineProps } from 'vue';
-import { Task } from '@/types/Task';
 
-defineProps<{
-    task: Task
+// Make props more generic to accept any item
+const props = defineProps<{
+    itemId: number | string // Instead of passing whole object, just pass ID
 }>()
 
+const emit = defineEmits(['delete']);
 
-const emit = defineEmits(['delete-task']);
-
-const deleteTask = (task: Task) => {
-    emit('delete-task', task);
+const handleDelete = () => {
+    emit('delete', props.itemId);
 };
 </script>
+
 <template>
-   <button class="btn btn-sm btn-circle btn-outline-danger" @click="deleteTask(task)">
+   <button class="btn btn-sm btn-circle btn-outline-danger" @click="handleDelete">
        <IconTrash />
     </button>
 </template>

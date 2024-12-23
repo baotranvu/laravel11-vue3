@@ -2,10 +2,10 @@
 import { ref, onMounted } from 'vue';
 import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
-import TaskCard from '../components/TaskCard.vue'
+import TaskCard from '../components/Task/TaskCard.vue';
+import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
 
 const tasks = ref<Task[]>([]);
-const newTask = ref<string>('');
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, loading, error } = useTaskCard(tasks);
 
 // Load tasks with error handling
@@ -13,9 +13,12 @@ onMounted(async () => {
     await getTasks();
 });
 
-const addTask = () => {
-    debounceHandleAddTask(newTask.value);
-    newTask.value = '';
+interface AddTaskEventPayload {
+    name: string;
+}
+
+const addTask = (payload: AddTaskEventPayload) => {
+    debounceHandleAddTask(payload.name);
 };
 
 </script>
@@ -23,22 +26,22 @@ const addTask = () => {
     <main style="min-height: 50vh; margin-top: 2rem">
         <div class="container">
             <!-- Display loading state -->
-            <div v-if="loading">Loading tasks...</div>
+            <div v-if="loading">
+                <output class="spinner-border text-primary">
+                    <span class="visually-hidden">Loading...</span>
+                </output>
+            </div>
             <!-- Display error state -->
-            <div v-if="error">{{ error }}</div>
+            <div v-if="error">
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            </div>
             <!-- Task list -->
             <div class="row">
                 <div class="col-md-8 offset-md-2">
                     <!-- Add new Task -->
-                    <div class="relative">
-                        <input
-                            type="text"
-                            class="form-control form-control-lg padding-right-lg"
-                            placeholder="+ Add new task. Press enter to save."
-                            v-model="newTask"
-                            @keyup.enter="addTask"
-                        />
-                    </div>
+                    <AddNewTaskInput @add-task="addTask" />
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
                         <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />
