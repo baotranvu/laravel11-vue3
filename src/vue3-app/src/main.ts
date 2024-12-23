@@ -6,7 +6,8 @@ import globalComponents from './global-components'
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles'; // Import Vuetify styles
 import '@mdi/font/css/materialdesignicons.css'; // Material Design Icons
-import { VContainer, VSwitch } from 'vuetify/components';
+import { VContainer, VSwitch, VDialog, VCard, VCardText, VCardActions, VSpacer, VBtn, VTextField } from 'vuetify/components';
+
 
 
 // Create a new Vuetify instance
@@ -14,7 +15,14 @@ import { VContainer, VSwitch } from 'vuetify/components';
 const vuetify = createVuetify({
     components: {
       VContainer,
-      VSwitch, // Register the components you need
+      VSwitch,
+      VDialog,
+      VCard,
+      VCardText,
+      VCardActions,
+      VSpacer,
+      VBtn,
+      VTextField,
     },
   });
 
