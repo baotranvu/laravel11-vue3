@@ -58,6 +58,13 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         const deletedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
         if (deletedTaskIndex === -1) return;
 
+        if(!confirm('Are you sure you want to delete this task?')) return;
+        
+        if(Number.isInteger(taskId) || taskId < 0){
+            console.error('Invalid task id');
+            return;
+        }
+
         const deletedTask = tasks.value[deletedTaskIndex];
         try {
             loading.value = true;
