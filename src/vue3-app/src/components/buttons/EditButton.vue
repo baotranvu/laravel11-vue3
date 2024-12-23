@@ -1,18 +1,9 @@
 <script setup lang="ts">
 import IconPencil from '../icons/IconPencil.vue';
-
-interface Props {
-    onClick?: () => void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-    onClick: undefined
-});
-
-function handleClick(): void {
-    if (props.onClick) {
-        props.onClick();
-    }
+const props = defineProps<{ itemId: number }>();
+const emit = defineEmits(['item-edit']);
+const handleClick = () => {
+    emit('item-edit', props.itemId);
 }
 </script>
 

@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
 import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
-
+import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
+import EditTask from '../components/Task/EditTask.vue';
+import { useModal } from '../composables/useModal';
 const tasks = ref<Task[]>([]);
-const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, loading, error } = useTaskCard(tasks);
-
+const showCompletedTasks = ref(true);
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, loading, error } = useTaskCard(tasks);
+const { open, close } = useModal();
 // Load tasks with error handling
 onMounted(async () => {
     await getTasks();
@@ -21,6 +24,28 @@ const addTask = (payload: AddTaskEventPayload) => {
     debounceHandleAddTask(payload.name);
 };
 
+const handleToggleCompletedTasks = (isCompleted: boolean) => {
+    showCompletedTasks.value = isCompleted;
+};
+
+const selectedTask = ref<Task | null>(null);
+
+const opendEditTaskModal = (taskId: number) => {
+    selectedTask.value = tasks.value.find(task => task.id === taskId) ?? null;
+    if (selectedTask.value) {
+        open();
+    }
+};
+
+const handleEditTask = (task: Task) => {
+    debouncedUpdateTask(task);
+    close();
+};
+
+// Filter tasks based on completion status
+const filteredTasks = computed(() => {
+    return showCompletedTasks.value ? tasks.value : tasks.value.filter(task => !task.is_completed);
+});
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
@@ -32,26 +57,31 @@ const addTask = (payload: AddTaskEventPayload) => {
                 </output>
             </div>
             <!-- Display error state -->
-            <div v-if="error">
+            <div v-else-if="error">
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
             </div>
             <!-- Task list -->
-            <div class="row">
+            <div v-else class="row">
                 <div class="col-md-8 offset-md-2">
                     <!-- Add new Task -->
-                    <AddNewTaskInput @add-task="addTask" />
+                    <div>
+                        <AddNewTaskInput @add-task="addTask" />
+                        <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks"/>
+                    </div>
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
-                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />
+                        <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" @edit-task="opendEditTaskModal" />
                     </div>
                     <!-- No tasks message -->
                     <div v-else>
                         <p class="text-center">No tasks found. Add a new task above.</p>
                     </div>
-                </div>
+                </div>  
             </div>
+            <!-- Edit Task Modal -->
+            <EditTask :task="selectedTask" @edit-task="handleEditTask"/>
         </div>
     </main>
 </template>

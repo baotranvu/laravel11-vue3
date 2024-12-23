@@ -121,11 +121,29 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
+    const handleUpdateTask = async (task: Task): Promise<void> => {
+        const taskToUpdate = tasks.value.find(t => t.id === task.id);
+        if (!taskToUpdate || loading.value) return;
+        try {
+            loading.value = true;
+            await TaskService.update(task.id,task);
+            error.value = null;
+        } catch (err: any) {
+            handleError('Failed to update task', err);
+            // Reset the task to its original state
+            Object.assign(taskToUpdate, task);
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const debounceHandleAddTask = debounce(handleAddTask, 300);
     const debouncedToggleTaskCompletion = debounce(toggleTaskCompletion, 300);
+    const debouncedUpdateTask = debounce(handleUpdateTask, 300);
 
     return {
         debouncedToggleTaskCompletion,
+        debouncedUpdateTask,
         handleDeleteTask,
         getTasks,
         debounceHandleAddTask,
