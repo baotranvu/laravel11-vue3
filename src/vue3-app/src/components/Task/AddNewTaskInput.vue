@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-const emit = defineEmits(['add-task']);
+interface AddTaskEventPayload {
+    name: string;
+}   
+const emit = defineEmits<(event: 'add-task', payload: AddTaskEventPayload) => void>();
 const newTask = ref<string>('');
 const addTask = (): void => {
     if (newTask.value === '') {
         return;
     }
-    emit('add-task', newTask.value);
+    emit('add-task', { name: newTask.value });
     newTask.value = '';
 };
 </script>

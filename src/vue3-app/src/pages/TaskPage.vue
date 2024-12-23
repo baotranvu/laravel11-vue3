@@ -13,8 +13,12 @@ onMounted(async () => {
     await getTasks();
 });
 
-const addTask = (name: string) => {
-    debounceHandleAddTask(name);
+interface AddTaskEventPayload {
+    name: string;
+}
+
+const addTask = (payload: AddTaskEventPayload) => {
+    debounceHandleAddTask(payload.name);
 };
 
 </script>
