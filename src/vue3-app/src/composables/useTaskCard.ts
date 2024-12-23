@@ -77,10 +77,10 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         try {
             loading.value = true;
             const response = await TaskService.all() as ApiResponse;
-            if (isTaskArray(response.data)) {
-                tasks.value = response.data;
-            } else if (isTaskArray(response)) {
-                tasks.value = response;
+            if (isTaskArray(response)) {
+                tasks.value = response.sort((a, b) => 
+                    new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
+                );
             } else {
                 tasks.value = [];
             }
