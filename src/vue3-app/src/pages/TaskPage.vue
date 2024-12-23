@@ -4,6 +4,7 @@ import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
 import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
+import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
 
 const tasks = ref<Task[]>([]);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, loading, error } = useTaskCard(tasks);
@@ -41,7 +42,10 @@ const addTask = (payload: AddTaskEventPayload) => {
             <div class="row">
                 <div class="col-md-8 offset-md-2">
                     <!-- Add new Task -->
-                    <AddNewTaskInput @add-task="addTask" />
+                    <div>
+                        <AddNewTaskInput @add-task="addTask" />
+                        <ToggleTaskButton />
+                    </div>
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
                         <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />

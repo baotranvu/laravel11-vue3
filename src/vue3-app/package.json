@@ -19,8 +19,9 @@
     "vue-tsc": "^2.1.10"
   },
   "dependencies": {
-    "axios": "^1.7.9",
+    "@mdi/font": "^7.4.47",
     "@types/lodash-es": "^4.17.12",
+    "axios": "^1.7.9",
     "vuetify": "^3.7.6"
   }
 }
