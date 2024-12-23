@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
@@ -7,6 +7,7 @@ import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
 
 const tasks = ref<Task[]>([]);
+const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, loading, error } = useTaskCard(tasks);
 
 // Load tasks with error handling
@@ -22,6 +23,15 @@ const addTask = (payload: AddTaskEventPayload) => {
     debounceHandleAddTask(payload.name);
 };
 
+const handleToggleCompletedTasks = (isCompleted: boolean) => {
+    showCompletedTasks.value = isCompleted;
+    console.log('Show completed tasks:', showCompletedTasks.value);
+};
+
+// Filter tasks based on completion status
+const filteredTasks = computed(() => {
+    return showCompletedTasks.value ? tasks.value : tasks.value.filter(task => !task.is_completed);
+});
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
@@ -44,11 +54,11 @@ const addTask = (payload: AddTaskEventPayload) => {
                     <!-- Add new Task -->
                     <div>
                         <AddNewTaskInput @add-task="addTask" />
-                        <ToggleTaskButton />
+                        <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks"/>
                     </div>
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
-                        <TaskCard v-for="task in tasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />
+                        <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" />
                     </div>
                     <!-- No tasks message -->
                     <div v-else>

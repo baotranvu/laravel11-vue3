@@ -6,9 +6,17 @@ import globalComponents from './global-components'
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles'; // Import Vuetify styles
 import '@mdi/font/css/materialdesignicons.css'; // Material Design Icons
+import { VContainer, VSwitch } from 'vuetify/components';
+
 
 // Create a new Vuetify instance
-const vuetify = createVuetify();
+// Create the Vuetify instance
+const vuetify = createVuetify({
+    components: {
+      VContainer,
+      VSwitch, // Register the components you need
+    },
+  });
 
 const app = createApp(App)
 app.use(globalComponents)
