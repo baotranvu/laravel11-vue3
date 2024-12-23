@@ -13,8 +13,8 @@ const emit = defineEmits(['toggle-task-completion', 'delete-task'])
 const toggleTaskCompletion = (task: Task) => {
     emit('toggle-task-completion', task)
 }
-const deleteTask = (task: Task) => {
-    emit('delete-task', task)
+const deleteTask = (taskId: number) => {
+    emit('delete-task', taskId)
 }
 </script>
 
@@ -50,7 +50,7 @@ const deleteTask = (task: Task) => {
                 </div>
                 <div class="task-actions">
                     <EditButton/>
-                    <DeleteButton @delete-task ="deleteTask" :task="task"/>
+                    <DeleteButton @delete="deleteTask" :task="task"/>
                 </div>
             </li>
         </ul>
