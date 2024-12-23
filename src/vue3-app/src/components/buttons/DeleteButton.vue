@@ -6,15 +6,19 @@ const props = defineProps<{
     itemId: number | string // Instead of passing whole object, just pass ID
 }>()
 
-const emit = defineEmits(['delete']);
+const emit = defineEmits(['item-delete']);
 
 const handleDelete = () => {
-    emit('delete', props.itemId);
+    emit('item-delete', props.itemId);
 };
 </script>
 
 <template>
-   <button class="btn btn-sm btn-circle btn-outline-danger" @click="handleDelete">
+   <button 
+        class="btn btn-sm btn-circle btn-outline-danger" 
+        @click="handleDelete"
+        aria-label="Delete item"
+    >
        <IconTrash />
     </button>
 </template>
