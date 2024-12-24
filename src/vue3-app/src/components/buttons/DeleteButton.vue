@@ -9,7 +9,10 @@ const props = defineProps<{
 const emit = defineEmits(['item-delete']);
 
 const handleDelete = () => {
-    emit('item-delete', props.itemId);
+    //confirm deletion
+    if (confirm('Are you sure you want to delete this item?')) {
+        emit('item-delete', props.itemId);
+    }
 };
 </script>
 

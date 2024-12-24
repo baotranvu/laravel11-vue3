@@ -58,9 +58,7 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         const deletedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
         if (deletedTaskIndex === -1) return;
 
-        if(!confirm('Are you sure you want to delete this task?')) return;
-        
-        if(Number.isInteger(taskId) || taskId < 0){
+        if(!Number.isInteger(taskId) || taskId < 0){
             console.error('Invalid task id');
             return;
         }
@@ -121,17 +119,19 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
-    const handleUpdateTask = async (task: Task): Promise<void> => {
-        const taskToUpdate = tasks.value.find(t => t.id === task.id);
+    const handleUpdateTask = async (taskId: number,data:Task): Promise<void> => {
+        const taskToUpdate = tasks.value.find(t => t.id === taskId);
         if (!taskToUpdate || loading.value) return;
         try {
             loading.value = true;
-            await TaskService.update(task.id,task);
+            await TaskService.update(taskId, data);
             error.value = null;
+            // Update the task in the local state
+            Object.assign(taskToUpdate, data);
         } catch (err: any) {
             handleError('Failed to update task', err);
             // Reset the task to its original state
-            Object.assign(taskToUpdate, task);
+            Object.assign(taskToUpdate, data);
         } finally {
             loading.value = false;
         }

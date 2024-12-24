@@ -1,34 +1,28 @@
 <script lang="ts" setup>
-import type { Task } from '../../types/Task';
-import { useModal } from '../../composables/useModal';
+import type { Task } from '@/types/Task';
+import BaseModal from '@/components/base/BaseModal.vue';
+import { ref } from 'vue';
 
-const { close, isOpen } = useModal();
-const props = defineProps<{ task: Task }>()
-const emit = defineEmits(['edit-task'])
+const props = defineProps<{ task: Task }>();
+const emit = defineEmits(['edit-task']);
+const newName = ref(props.task.name);
+
 const editTask = () => {
-    if(!props.task.name) return
-    emit('edit-task', props.task)
-}
+    if(!newName) return;
+    emit('edit-task', props.task.id, newName.value);
+};
 </script>
 
 <template>
-    <v-dialog v-model="isOpen" max-width="500">
-        <v-card title="Edit Task">
-            <v-card-text>
-                <v-text-field
-                    v-model.trim="task.name"
-                    label="Task name"
-                    outlined
-                    dense
-                    @keydown.enter="editTask"
-                ></v-text-field>
-            </v-card-text>
-
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text="Close" @click="close"></v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+    <BaseModal title="Edit Task">
+        <template #content>
+            <v-text-field
+                v-model.trim="newName"
+                label="Task name"
+                outlined
+                dense
+                @keydown.enter="editTask"
+            ></v-text-field>
+        </template>
+    </BaseModal>
 </template>
-<script lang="ts" setup>

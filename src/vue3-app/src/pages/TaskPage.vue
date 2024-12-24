@@ -37,8 +37,11 @@ const opendEditTaskModal = (taskId: number) => {
     }
 };
 
-const handleEditTask = (task: Task) => {
-    debouncedUpdateTask(task);
+const handleEditTask = (taskId:number, newName:string) => {
+    const taskToUpdate = tasks.value.find(task => task.id === taskId);
+    if (taskToUpdate) {
+        debouncedUpdateTask(taskId, { ...taskToUpdate, name: newName });
+    }
     close();
 };
 
