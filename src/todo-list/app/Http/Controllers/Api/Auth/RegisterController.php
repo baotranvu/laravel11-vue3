@@ -18,7 +18,6 @@ class RegisterController extends Controller
 
         return response()->json([
             'message' => 'You are registered',
-            'token' => auth()->user()->createToken('laravel_api_token')->plainTextToken,
         ]);
     }
 }
