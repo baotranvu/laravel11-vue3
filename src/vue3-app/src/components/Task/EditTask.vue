@@ -6,6 +6,7 @@ const { close, isOpen } = useModal();
 const props = defineProps<{ task: Task }>()
 const emit = defineEmits(['edit-task'])
 const editTask = () => {
+    if(!props.task.name) return
     emit('edit-task', props.task)
 }
 </script>
@@ -15,7 +16,7 @@ const editTask = () => {
         <v-card title="Edit Task">
             <v-card-text>
                 <v-text-field
-                    v-model="task.name"
+                    v-model.trim="task.name"
                     label="Task name"
                     outlined
                     dense
@@ -30,3 +31,4 @@ const editTask = () => {
         </v-card>
     </v-dialog>
 </template>
+<script lang="ts" setup>
