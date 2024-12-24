@@ -57,13 +57,13 @@ const filteredTasks = computed(() => {
                 </output>
             </div>
             <!-- Display error state -->
-            <div v-else-if="error">
+            <div v-if="error">
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
             </div>
             <!-- Task list -->
-            <div v-else class="row">
+            <div class="row">
                 <div class="col-md-8 offset-md-2">
                     <!-- Add new Task -->
                     <div>
@@ -81,7 +81,7 @@ const filteredTasks = computed(() => {
                 </div>  
             </div>
             <!-- Edit Task Modal -->
-            <EditTask :task="selectedTask" @edit-task="handleEditTask"/>
+            <EditTask v-if="selectedTask" :task="selectedTask" @edit-task="handleEditTask"/>
         </div>
     </main>
 </template>
