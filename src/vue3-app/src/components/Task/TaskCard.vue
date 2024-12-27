@@ -1,13 +1,9 @@
 <script lang="ts" setup>
 import { Task } from '../../types/Task';  // Import the Task interface
 import { ref } from 'vue';
-withDefaults(defineProps<{
-    task: Task;
-    disabled?: boolean;
-}>(), {
-    disabled: false
-})
 
+const props = defineProps<{ task: Task, disabled: boolean }>()
+withDefaults(props, { disabled: false })
 const emit = defineEmits(['toggle-task-completion', 'delete-task', 'edit-task'])
 
 const toggleTaskCompletion = (task: Task) => {
@@ -17,12 +13,12 @@ const deleteTask = (taskId: number) => {
     emit('delete-task', taskId)
 }
 const editTask = (taskId: number, newName: string) => {
+    if(!newName || newName === props.task.name || !taskId) return
     emit('edit-task', taskId, newName)
     isEdit.value = false;
 }
 
 const isEdit = ref(false);
-const newTaskName = ref<string>('');
 </script>
 
 <template>
@@ -46,7 +42,7 @@ const newTaskName = ref<string>('');
                 <div class="d-flex justify-content-start align-items-center" v-else>
                     <label for="new-task-input" class="visually-hidden">New task name</label>
                     <input id="new-task-input" type="text" class="form-control form-control-md padding-right-lg"
-                        placeholder="Change the task name. Press enter to save." v-model.trim="newTaskName" @keyup.enter="editTask(task.id, newTaskName)"
+                        placeholder="Change the task name. Press enter to save." v-model.trim="task.name" @keyup.enter="editTask(task.id, task.name)"
                         maxlength="100" aria-describedby="task-input-help" required />
                 </div>
                 <div class="task-actions" v-if="!isEdit">
