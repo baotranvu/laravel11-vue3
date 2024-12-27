@@ -13,7 +13,7 @@ const deleteTask = (taskId: number) => {
     emit('delete-task', taskId)
 }
 const editTask = (taskId: number, newName: string) => {
-    if(!newName || newName === props.task.name || !taskId) {
+    if(!newName || !taskId) {
         isEdit.value = false;
         return
     }
