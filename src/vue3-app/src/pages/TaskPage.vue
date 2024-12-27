@@ -42,18 +42,18 @@ const filteredTasks = computed(() => {
         <div class="container">
             <!-- Display loading state -->
             <div v-if="loading">
-                <output class="spinner-border text-primary">
-                    <span class="visually-hidden">Loading...</span>
+                <output class="d-flex justify-content-center items-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </output>
             </div>
             <!-- Display error state -->
-            <div v-if="error">
-                <div class="alert alert-danger" role="alert">
-                    {{ error }}
-                </div>
+            <div v-else-if="error">
+                <ErrorPage :error="error" @clear-error="error = null" />
             </div>
             <!-- Task list -->
-            <div class="row">
+            <div v-else class="row">
                 <div class="col-md-8 offset-md-2">
                     <!-- Add new Task -->
                     <div>
