@@ -8,7 +8,7 @@ const API_CONFIG: AxiosRequestConfig = {
     },
     timeout: 10000
 };
-
+axios.defaults.withCredentials = true;
 class ApiService {
     private static instance: AxiosInstance;
 

@@ -40,7 +40,7 @@
                         required
                     />
                 </div>
-                <div class="error" v-if="error">{{ error }}</div>
+                <div class="error" v-if="error">{{ error.message }}</div>
                 <button type="submit" :disabled="loading">
                     {{ isLogin ? 'Login' : 'Register' }}
                 </button>
@@ -59,7 +59,6 @@
 import { ref, reactive, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
-import type { ErrorType } from '@/types/error';
 
 const emit = defineEmits(['login-success'])
 
@@ -68,10 +67,10 @@ const isEmailValid = computed(() => {
     return emailRegex.test(formData.email)
 })
 
-const { login, register, loading, isAuthenticated } = useAuth()
+const { login, register, loading, isAuthenticated, error } = useAuth()
 
 const isLogin = ref(true)
-const error = ref<ErrorType | null>(null)
+
 
 const formData = reactive({
     name: '',
@@ -82,7 +81,7 @@ const formData = reactive({
 
 const toggleForm = () => {
     isLogin.value = !isLogin.value
-    error.value = ''
+    error.value = null
     formData.name = ''
     formData.email = ''
     formData.password = ''
@@ -97,10 +96,10 @@ const resetFormData = () => {
 }
 
 const handleSubmit = async () => {
-    error.value = ''
+    error.value = null
     
     if (!isLogin.value && formData.password !== formData.password_confirmation) {
-        error.value = 'Passwords do not match'
+        error.value = { status: 400, message: 'Passwords do not match' }
         return
     }
 
@@ -115,7 +114,7 @@ const handleSubmit = async () => {
         }
         
     } catch (e) {
-        error.value = (e as Error).message
+        console.error(e)
     }
     resetFormData()
 }
