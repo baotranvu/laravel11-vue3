@@ -2,8 +2,8 @@
 import { Task } from '../../types/Task';  // Import the Task interface
 import { ref } from 'vue';
 
-const props = defineProps<{ task: Task, disabled: boolean }>()
-withDefaults(props, { disabled: false })
+const props = defineProps<{ task: Task}>()
+
 const emit = defineEmits(['toggle-task-completion', 'delete-task', 'edit-task'])
 
 const toggleTaskCompletion = (task: Task) => {
@@ -13,7 +13,10 @@ const deleteTask = (taskId: number) => {
     emit('delete-task', taskId)
 }
 const editTask = (taskId: number, newName: string) => {
-    if(!newName || newName === props.task.name || !taskId) return
+    if(!newName || newName === props.task.name || !taskId) {
+        isEdit.value = false;
+        return
+    }
     emit('edit-task', taskId, newName)
     isEdit.value = false;
 }
@@ -26,7 +29,7 @@ const isEdit = ref(false);
         <ul class="list-group list-group-flush">
             <li class="list-group-item py-3">
                 <div class="d-flex justify-content-start align-items-center" v-if="!isEdit">
-                    <input class="form-check-input mt-0" type="checkbox" :disabled="disabled"
+                    <input class="form-check-input mt-0" type="checkbox" role="switch"
                         aria-label="Task completion checkbox" :checked="task.is_completed"
                         @change="toggleTaskCompletion(task)" />
                     <div class="ms-2 flex-grow-1" title="Double click the text to edit or remove">
