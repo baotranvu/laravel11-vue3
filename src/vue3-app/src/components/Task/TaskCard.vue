@@ -2,7 +2,7 @@
 import { Task } from '../../types/Task';  // Import the Task interface
 import { ref } from 'vue';
 
-const props = defineProps<{ task: Task}>()
+defineProps<{ task: Task}>()
 
 const emit = defineEmits(['toggle-task-completion', 'delete-task', 'edit-task'])
 

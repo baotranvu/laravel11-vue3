@@ -59,6 +59,7 @@
 import { ref, reactive, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
+import type { ErrorType } from '@/types/error';
 
 const emit = defineEmits(['login-success'])
 
@@ -70,7 +71,7 @@ const isEmailValid = computed(() => {
 const { login, register, loading, isAuthenticated } = useAuth()
 
 const isLogin = ref(true)
-const error = ref('')
+const error = ref<ErrorType | null>(null)
 
 const formData = reactive({
     name: '',
