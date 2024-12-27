@@ -12,12 +12,11 @@ class RegisterController extends Controller
     /**
      * Handle the incoming request.
      */
+    use ApiResponse;
     public function __invoke(RegisterRequest $request)
     {
         User::create($request->getData());
 
-        return response()->json([
-            'message' => 'You are registered',
-        ]);
+        return $this->successResponse(null, 'You are registered', HttpStatus::CREATED);
     }
 }

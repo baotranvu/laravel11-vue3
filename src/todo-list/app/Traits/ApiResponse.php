@@ -2,98 +2,142 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+
 trait ApiResponse
 {
     /**
-     * Return a success JSON response.
+     * Build API response structure
      *
-     * @param array|string $data
+     * @param mixed $data
      * @param string|null $message
      * @param int $code
-     * @return \Illuminate\Http\JsonResponse
+     * @param bool $status
+     * @return array
      */
-    protected function success($data, string $message = null, int $code = 200)
+    protected function buildResponse($data = null, ?string $message = null, int $code = 200, bool $status = true): array
     {
-        return response()->json([
-            'status' => 'Success',
+        return [
+            'success' => $status,
+            'code' => $code,
             'message' => $message,
-            'data' => $data
-        ], $code);
+            'data' => $data,
+        ];
     }
 
     /**
-     * Return an error JSON response.
+     * Return a success response
      *
-     * @param string $message
+     * @param mixed $data
+     * @param string|null $message
      * @param int $code
-     * @param array|string|null $data
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function error(string $message, int $code, $data = null)
+    public function successResponse($data = null, ?string $message = null, int $code = Response::HTTP_OK): JsonResponse
     {
-        return response()->json([
-            'status' => 'Error',
-            'message' => $message,
-            'data' => $data
-        ], $code);
+        return response()->json(
+            $this->buildResponse($data, $message, $code),
+            $code
+        );
     }
 
     /**
-     * Handle validation error response.
+     * Return an error response
      *
-     * @param \Illuminate\Validation\ValidationException $exception
-     * @return \Illuminate\Http\JsonResponse
+     * @param string|null $message
+     * @param mixed $errors
+     * @param int $code
+     * @return JsonResponse
      */
-    protected function validationError($exception)
+    public function errorResponse(?string $message = null, $errors = null, int $code = Response::HTTP_BAD_REQUEST): JsonResponse
     {
-        return response()->json([
-            'status' => 'Error',
-            'message' => 'Validation Error',
-            'errors' => $exception->errors()
-        ], 422);
+        return response()->json(
+            $this->buildResponse($errors, $message, $code, false),
+            $code
+        );
     }
 
     /**
-     * Handle not found error response.
+     * Return a validation error response
      *
-     * @param string $message
-     * @return \Illuminate\Http\JsonResponse
+     * @param mixed $errors
+     * @param string|null $message
+     * @return JsonResponse
      */
-    protected function notFound(string $message = 'Resource not found')
+    public function validationError($errors, ?string $message = 'Validation failed'): JsonResponse
     {
-        return $this->error($message, 404);
+        return $this->errorResponse($message, $errors, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**
-     * Handle unauthorized error response.
-     *
-     * @param string $message
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function unauthorized(string $message = 'Unauthorized')
-    {
-        return $this->error($message, 401);
-    }
-
-    /**
-     * Handle forbidden error response.
+     * Return a not found error response
      *
      * @param string $message
-     * @return \Illuminate\Http\JsonResponse
+     * @param mixed $data
+     * @return JsonResponse
      */
-    protected function forbidden(string $message = 'Forbidden')
+    public function notFound(string $message = 'Resource not found', $data = null): JsonResponse
     {
-        return $this->error($message, 403);
+        return $this->errorResponse($message, $data, Response::HTTP_NOT_FOUND);
     }
 
     /**
-     * Handle server error response.
+     * Return an unauthorized error response
      *
      * @param string $message
-     * @return \Illuminate\Http\JsonResponse
+     * @param mixed $data
+     * @return JsonResponse
      */
-    protected function serverError(string $message = 'Server Error')
+    public function unauthorized(string $message = 'Unauthorized', $data = null): JsonResponse
     {
-        return $this->error($message, 500);
+        return $this->errorResponse($message, $data, Response::HTTP_UNAUTHORIZED);
+    }
+
+    /**
+     * Return a forbidden error response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return JsonResponse
+     */
+    public function forbidden(string $message = 'Forbidden', $data = null): JsonResponse
+    {
+        return $this->errorResponse($message, $data, Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * Return a server error response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return JsonResponse
+     */
+    public function serverError(string $message = 'Server Error', $data = null): JsonResponse
+    {
+        return $this->errorResponse($message, $data, Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Return a created response
+     *
+     * @param mixed $data
+     * @param string|null $message
+     * @return JsonResponse
+     */
+    public function created($data = null, ?string $message = 'Resource created successfully'): JsonResponse
+    {
+        return $this->successResponse($data, $message, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Return a no content response
+     *
+     * @param string|null $message
+     * @return JsonResponse
+     */
+    public function noContent(?string $message = 'No content'): JsonResponse
+    {
+        return $this->successResponse(null, $message, Response::HTTP_NO_CONTENT);
     }
 }
