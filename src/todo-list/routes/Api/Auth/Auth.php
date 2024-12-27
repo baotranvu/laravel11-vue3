@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 
 
 Route::post('/login', [LoginController::class,'__invoke'])->middleware('guest');
+Route::post('/register', [RegisterController::class,'__invoke'])->middleware('guest');
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/register', [RegisterController::class,'__invoke']);
     Route::post('/logout', [LogoutController::class,'__invoke']);
 });
