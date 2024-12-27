@@ -119,19 +119,26 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         }
     };
 
-    const handleUpdateTask = async (taskId: number,data:Task): Promise<void> => {
-        const taskToUpdate = tasks.value.find(t => t.id === taskId);
-        if (!taskToUpdate || loading.value) return;
-        try {
-            loading.value = true;
-            await TaskService.update(taskId, data);
-            error.value = null;
-            // Update the task in the local state
-            Object.assign(taskToUpdate, data);
-        } catch (err: any) {
-            handleError('Failed to update task', err);
-            // Reset the task to its original state
-            Object.assign(taskToUpdate, data);
+const handleUpdateTask = async (taskId: number,data:Task): Promise<void> => {
+    const taskToUpdate = tasks.value.find(t => t.id === taskId);
+    // Capture of the original state here
+    const originalState = { ...taskToUpdate };
+    if (!taskToUpdate || loading.value) return;
+    try {
+        loading.value = true;
+        await TaskService.update(taskId, data);
+        error.value = null;
+        // Update the task in the local state
+        Object.assign(taskToUpdate, data);
+    } catch (err: any) {
+        handleError('Failed to update task', err);
+        // Reset the task to its original state
+        Object.assign(taskToUpdate, originalState);
+    } finally {
+        loading.value = false;
+    }
+}
+            Object.assign(taskToUpdate, originalState);
         } finally {
             loading.value = false;
         }
