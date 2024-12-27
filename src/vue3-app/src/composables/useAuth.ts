@@ -15,9 +15,11 @@ export function useAuth() {
         try {
             loading.value = true;
             error.value = null;
-            user.value = await authService.login(credentials);
-        } catch (err) {
-            error.value = 'Login failed';
+            const response = await authService.login(credentials);
+            console.log(response);
+
+        } catch (err: any) {
+            error.value = err.response.data;
             throw err;
         } finally {
             loading.value = false;
@@ -31,7 +33,7 @@ export function useAuth() {
             await authService.logout();
             user.value = null;
         } catch (err) {
-            error.value = 'Logout failed';
+            console.error('Logout failed', err);    
             throw err;
         } finally {
             loading.value = false;
@@ -44,7 +46,7 @@ export function useAuth() {
             error.value = null;
             user.value = await authService.getUser();
         } catch (err) {
-            error.value = 'Authentication check failed';
+            console.error('Check auth failed', err);
             user.value = null;
         } finally {
             loading.value = false;
@@ -57,7 +59,7 @@ export function useAuth() {
             error.value = null;
             user.value = await authService.register(data);
         } catch (err) {
-            error.value = 'Registration failed';
+            console.error('Register failed', err);
             throw err;
         } finally {
             loading.value = false;
