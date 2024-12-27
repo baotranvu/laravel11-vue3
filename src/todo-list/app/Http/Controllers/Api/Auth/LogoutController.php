@@ -15,6 +15,6 @@ class LogoutController extends Controller
     {
        $request->user()->currentAccessToken()->delete();
 
-       return $this->successResponse(null, 'Logout successful', HttpStatus::OK);
+       return $this->successResponse(null, 'Logout successful', HttpStatus::OK)->withCookie(cookie()->forget('api_token'));
     }
 }

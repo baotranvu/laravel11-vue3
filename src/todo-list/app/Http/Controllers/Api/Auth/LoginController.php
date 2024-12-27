@@ -19,9 +19,9 @@ class LoginController extends Controller
         if (! auth()->attempt($request->only('email', 'password'))) {
             return $this->errorResponse('User name or password is incorrect', null, HttpStatus::UNAUTHORIZED);
         }
-
+        $token = auth()->user()->createToken('API Token')->plainTextToken;
+        $cookie = cookie('api_token', $token, 60); 
         return $this->successResponse([
-            'token' => auth()->user()->createToken('API Token')->plainTextToken
-        ], 'Login successful', HttpStatus::OK);
+        ], 'Login successful', HttpStatus::OK)->withCookie($cookie);
     }
 }
