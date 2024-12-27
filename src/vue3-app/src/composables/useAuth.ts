@@ -15,6 +15,8 @@ export function useAuth() {
             loading.value = true;
             error.value = null;
             user.value = await authService.login(credentials);
+            // save token to local storage
+            localStorage.setItem('token', user.value?.token ?? '');
         } catch (err) {
             error.value = 'Login failed';
             throw err;

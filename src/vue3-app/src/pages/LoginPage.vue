@@ -60,6 +60,8 @@ import { ref, reactive, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
 
+const emit = defineEmits(['login-success'])
+
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(formData.email)
@@ -108,7 +110,7 @@ const handleSubmit = async () => {
             await register(formData as RegisterData)
         }
         if(isAuthenticated) {
-            alert(isLogin.value ? 'Logged in successfully' : 'Registered successfully')
+            emit('login-success')
         }
         
     } catch (e) {

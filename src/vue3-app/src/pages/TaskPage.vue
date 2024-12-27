@@ -5,13 +5,9 @@ import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
 import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
-import EditTask from '../components/Task/EditTask.vue';
-import { useModal } from '../composables/useModal';
 const tasks = ref<Task[]>([]);
 const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, loading, error } = useTaskCard(tasks);
-const { open, close } = useModal();
-// Load tasks with error handling
 onMounted(async () => {
     await getTasks();
 });
@@ -28,21 +24,12 @@ const handleToggleCompletedTasks = (isCompleted: boolean) => {
     showCompletedTasks.value = isCompleted;
 };
 
-const selectedTask = ref<Task | null>(null);
-
-const opendEditTaskModal = (taskId: number) => {
-    selectedTask.value = tasks.value.find(task => task.id === taskId) ?? null;
-    if (selectedTask.value) {
-        open();
-    }
-};
-
 const handleEditTask = (taskId:number, newName:string) => {
     const taskToUpdate = tasks.value.find(task => task.id === taskId);
     if (taskToUpdate) {
         debouncedUpdateTask(taskId, { ...taskToUpdate, name: newName });
     }
-    close();
+    
 };
 
 // Filter tasks based on completion status
@@ -75,7 +62,7 @@ const filteredTasks = computed(() => {
                     </div>
                     <!-- List of tasks -->
                     <div class="mt-4" v-if="tasks.length > 0">
-                        <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" @edit-task="opendEditTaskModal" />
+                        <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" @edit-task="handleEditTask" />
                     </div>
                     <!-- No tasks message -->
                     <div v-else>
@@ -83,8 +70,6 @@ const filteredTasks = computed(() => {
                     </div>
                 </div>  
             </div>
-            <!-- Edit Task Modal -->
-            <EditTask v-if="selectedTask" :task="selectedTask" @edit-task="handleEditTask"/>
         </div>
     </main>
 </template>
