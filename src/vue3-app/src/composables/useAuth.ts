@@ -1,12 +1,13 @@
 import { ref, computed } from 'vue';
 import { AuthService } from '@/services/AuthService';
 import { User, LoginCredentials, RegisterData } from '@/types/Auth';
+import type { ErrorType } from '@/types/error';
 
 export function useAuth() {
     const authService = AuthService.getInstance();
     const user = ref<User | null>(null);
     const loading = ref(false);
-    const error = ref<string | null>(null);
+    const error = ref<ErrorType | null>(null);
 
     const isAuthenticated = computed(() => !!user.value);
 
@@ -15,8 +16,6 @@ export function useAuth() {
             loading.value = true;
             error.value = null;
             user.value = await authService.login(credentials);
-            // save token to local storage
-            localStorage.setItem('token', user.value?.token ?? '');
         } catch (err) {
             error.value = 'Login failed';
             throw err;
