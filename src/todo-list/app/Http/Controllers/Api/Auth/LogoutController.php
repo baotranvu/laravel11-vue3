@@ -10,12 +10,11 @@ class LogoutController extends Controller
     /**
      * Handle the incoming request.
      */
+    use ApiResponse;
     public function __invoke(Request $request)
     {
        $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'message' => 'You are logged out',
-        ]);
+       return $this->successResponse(null, 'Logout successful', HttpStatus::OK);
     }
 }

@@ -13,9 +13,10 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
+    use ApiResponse;
     public function index()
     {
-        return TaskResource::collection(Task::all());
+        return $this->successResponse(TaskResource::collection(Task::all()), 'Tasks retrieved successfully', HttpStatus::OK);
     }
 
     /**
@@ -31,7 +32,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        return TaskResource::make(Task::create($request->validated()));
+        $task = Task::create($request->validated());
+
+        return $this->successResponse(TaskResource::make($task), 'Task created successfully', HttpStatus::CREATED);
     }
 
     /**
@@ -39,7 +42,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return TaskResource::make($task);
+        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully', HttpStatus::OK);
     }
 
     /**
@@ -57,7 +60,7 @@ class TaskController extends Controller
     {
         $task->update($request->validated());
 
-        return TaskResource::make($task);
+        return $this->successResponse(TaskResource::make($task), 'Task updated successfully', HttpStatus::OK);
     }
 
     /**
@@ -67,6 +70,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return response()->noContent();
+        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::NO_CONTENT);
     }
 }
