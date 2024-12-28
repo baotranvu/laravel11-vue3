@@ -1,9 +1,10 @@
 import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import { api } from '@/http/api';
+import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
     private readonly apiUrl = '/auth';
-
+    private readonly baseUrl = 'http://laravel.test:8080';
     private constructor() {}
 
     static getInstance(): AuthService {
@@ -14,6 +15,8 @@ export class AuthService {
     }
 
     async login(credentials: LoginCredentials): Promise<User> {
+        // Step 1: Get the CSRF cookie
+        await axios.get(`${this.baseUrl}/sanctum/csrf-cookie`);
         const response = await api.post(`${this.apiUrl}/login`, credentials);
         return response.data;
     }
