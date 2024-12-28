@@ -8,17 +8,23 @@ use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Gate;
+use App\Traits\ApiResponse;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use ApiResponse;
     public function index()
     {
         Gate::authorize('viewAny', Task::class);
         
-        return TaskResource::collection(auth()->user()->tasks()->get());
+        return $this->successResponse(
+            TaskResource::collection(auth()->user()->tasks()->get()),
+            'Tasks retrieved successfully',
+            HttpStatus::OK
+        );
     }
 
     /**
@@ -36,7 +42,7 @@ class TaskController extends Controller
     {
         $task = $request->user()->tasks()->create($request->validated());
 
-        return new TaskResource($task);
+        return $this->successResponse(TaskResource::make($task), 'Task created successfully', HttpStatus::CREATED);
     }
 
     /**
@@ -46,7 +52,7 @@ class TaskController extends Controller
     {
         Gate::authorize('view', $task);
 
-        return TaskResource::make($task);
+        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully', HttpStatus::OK);
     }
 
     /**
@@ -63,11 +69,11 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         if ($request->user()->cannot('update', $task)) {
-            abort(403);
+            return $this->errorResponse('You are not authorized to update this task', null, HttpStatus::FORBIDDEN);
         }
         $task->update($request->validated());
 
-        return TaskResource::make($task);
+        return $this->successResponse(TaskResource::make($task), 'Task updated successfully', HttpStatus::OK);
     }
 
     /**
@@ -77,8 +83,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return response()->json([
-            'message' => 'Task deleted successfully',
-        ]);
+        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::OK);
     }
 }

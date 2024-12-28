@@ -16,12 +16,12 @@ class LoginController extends Controller
      */
     public function __invoke(LoginRequest $request)
     {
-        if (! auth()->attempt($request->only('email', 'password'))) {
+        if (!auth()->attempt($request->only('email', 'password'))) {
             return $this->errorResponse('User name or password is incorrect', null, HttpStatus::UNAUTHORIZED);
         }
         $token = auth()->user()->createToken('API Token')->plainTextToken;
         $cookie = cookie('api_token', $token, 60); 
         return $this->successResponse([
-        ], 'Login successful', HttpStatus::OK)->withCookie($cookie);
+        ], 'Login successful', HttpStatus::OK)->withCookie($cookie->withSecure(false)->withHttpOnly(false));
     }
 }
