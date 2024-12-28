@@ -23,6 +23,7 @@
     "@types/lodash-es": "^4.17.12",
     "axios": "^1.7.9",
     "lodash-es": "^4.17.21",
+    "pinia": "^2.3.0",
     "vuetify": "^3.7.6"
   }
 }
