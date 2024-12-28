@@ -42,6 +42,7 @@
                 </div>
                 <div class="error" v-if="error">{{ error.message }}</div>
                 <button type="submit" :disabled="loading">
+                    <span v-if="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
                     {{ isLogin ? 'Login' : 'Register' }}
                 </button>
             </form>
@@ -60,14 +61,14 @@ import { ref, reactive, computed } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
 
-const emit = defineEmits(['login-success'])
 
+const emit = defineEmits(['login-success']);
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(formData.email)
 })
 
-const { login, register, loading, isAuthenticated, error } = useAuth()
+const { login, register, loading, error, isAuthenticated } = useAuth()
 
 const isLogin = ref(true)
 
@@ -106,13 +107,16 @@ const handleSubmit = async () => {
     try {
         if (isLogin.value) {
             await login(formData as LoginCredentials)
+            if (isAuthenticated.value) {
+                emit('login-success', isAuthenticated.value)
+            }
         } else {
-            await register(formData as RegisterData)
+           await register(formData as RegisterData)
+           if(isAuthenticated.value) {
+                alert('Registration successful')
+                toggleForm()
+           }
         }
-        if(isAuthenticated) {
-            emit('login-success')
-        }
-        
     } catch (e) {
         console.error(e)
     }

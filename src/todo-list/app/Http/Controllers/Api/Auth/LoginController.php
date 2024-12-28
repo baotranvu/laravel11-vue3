@@ -22,6 +22,8 @@ class LoginController extends Controller
         $token = auth()->user()->createToken('API Token')->plainTextToken;
         $cookie = cookie('api_token', $token, 60); 
         return $this->successResponse([
+                'token' => $token,
+                'user' => auth()->user()
         ], 'Login successful', HttpStatus::OK)->withCookie($cookie->withSecure(false)->withHttpOnly(false));
     }
 }
