@@ -7,6 +7,8 @@ import { createVuetify } from 'vuetify';
 import 'vuetify/styles'; // Import Vuetify styles
 import '@mdi/font/css/materialdesignicons.css'; // Material Design Icons
 import { VContainer, VSwitch, VDialog, VCard, VCardText, VCardActions, VSpacer, VBtn, VTextField } from 'vuetify/components';
+//import pinia
+import { createPinia } from 'pinia'
 
 
 
@@ -26,7 +28,10 @@ const vuetify = createVuetify({
     },
   });
 
+const pinia = createPinia()
+
 const app = createApp(App)
 app.use(globalComponents)
 app.use(vuetify)
+app.use(pinia)
 app.mount('#app')
