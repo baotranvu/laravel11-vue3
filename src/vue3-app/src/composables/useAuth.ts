@@ -15,11 +15,9 @@ export function useAuth() {
         try {
             loading.value = true;
             error.value = null;
-            const response = await authService.login(credentials);
-            console.log(response);
-
+            await authService.login(credentials);
         } catch (err: any) {
-            error.value = err.response.data;
+            error.value = err?.response?.data;
             throw err;
         } finally {
             loading.value = false;

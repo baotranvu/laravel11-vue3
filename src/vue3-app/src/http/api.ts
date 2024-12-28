@@ -6,9 +6,10 @@ const API_CONFIG: AxiosRequestConfig = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     },
-    timeout: 10000
+    timeout: 10000,
+    withCredentials: true,
+    withXSRFToken: true
 };
-axios.defaults.withCredentials = true;
 class ApiService {
     private static instance: AxiosInstance;
 
