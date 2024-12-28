@@ -16,19 +16,16 @@
 import { ref, onMounted } from 'vue'
 import LoginPage from './LoginPage.vue'
 import TaskPage from './TaskPage.vue'
+import { useAuth } from '../composables/useAuth'
 
+const { checkAuth } = useAuth()
 const isLoggedIn = ref(false)
 
-const handleLoginSuccess = () => {
-    isLoggedIn.value = true
-}
-
-const checkLoginStatus = () => {
-    const token = localStorage.getItem('token')
-    isLoggedIn.value = !!token
-}
-
 onMounted(() => {
-    checkLoginStatus()
+    checkAuth()
 })
+
+const handleLoginSuccess = (isAuthenticated:boolean) => {
+    isLoggedIn.value = isAuthenticated
+}
 </script>
