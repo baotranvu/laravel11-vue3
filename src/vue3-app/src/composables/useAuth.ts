@@ -2,6 +2,7 @@ import { ref, computed } from 'vue';
 import { AuthService } from '@/services/AuthService';
 import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import type { ErrorType } from '@/types/error';
+import { ApiResponse } from '@/types/ApiResponse';
 
 export function useAuth() {
     const authService = AuthService.getInstance();
@@ -15,7 +16,8 @@ export function useAuth() {
         try {
             loading.value = true;
             error.value = null;
-            await authService.login(credentials);
+            const response = await authService.login(credentials) as ApiResponse; ;
+            user.value = response.data.user;
         } catch (err: any) {
             error.value = err?.response?.data;
             throw err;
@@ -55,7 +57,8 @@ export function useAuth() {
         try {
             loading.value = true;
             error.value = null;
-            user.value = await authService.register(data);
+            const response = await authService.register(data) as ApiResponse;
+            user.value = response.data.user;
         } catch (err) {
             console.error('Register failed', err);
             throw err;
