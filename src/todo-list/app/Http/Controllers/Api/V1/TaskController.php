@@ -73,6 +73,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::NO_CONTENT);
+        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::OK);
     }
 }

@@ -69,7 +69,7 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         if ($request->user()->cannot('update', $task)) {
-            return $this->errorResponse('You are not authorized to update this task', null, HttpStatus::UNAUTHORIZED);
+            return $this->errorResponse('You are not authorized to update this task', null, HttpStatus::FORBIDDEN);
         }
         $task->update($request->validated());
 
@@ -83,6 +83,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::NO_CONTENT);
+        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::OK);
     }
 }
