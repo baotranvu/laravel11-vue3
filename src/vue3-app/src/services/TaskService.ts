@@ -2,12 +2,13 @@
 import ResourceService from "./ResourceService";
 import { Task, TaskPayload } from "@/types/Task";
 import api from "@/http/api";
+const API_VERSION = "v1";
 class TaskService extends ResourceService<Task, TaskPayload> {
   constructor() {
-    super("v1/tasks");
+    super(`${API_VERSION}/tasks`);
   }
   async changeTaskStatus(id: number) {
-    return api.patch(`v1/tasks/${id}/complete`);
+    return api.patch(`${API_VERSION}/tasks/${id}/complete`);
   }
 }
 

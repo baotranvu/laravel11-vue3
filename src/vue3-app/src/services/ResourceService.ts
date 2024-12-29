@@ -1,6 +1,5 @@
 // src/services/ResourceService.ts
 import api from "../http/api";
-
 // Generic interface for any resource with an ID
 interface Resource {
   id: number;

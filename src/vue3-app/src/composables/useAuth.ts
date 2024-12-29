@@ -1,77 +1,82 @@
-import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { AuthService } from '@/services/AuthService';
-import { User, LoginCredentials, RegisterData } from '@/types/Auth';
-import type { ErrorType } from '@/types/error';
+import { LoginCredentials, RegisterData } from '@/types/Auth';
 import { ApiResponse } from '@/types/ApiResponse';
-
+import { useAuthStore } from '@/stores/auth';
+import { useGlobalStore } from '@/stores/global';
 export function useAuth() {
     const authService = AuthService.getInstance();
-    const user = ref<User | null>(null);
-    const loading = ref(false);
-    const error = ref<ErrorType | null>(null);
-
-    const isAuthenticated = computed(() => !!user.value);
-
+    const authStore = useAuthStore();
+    const globalStore = useGlobalStore();
+    const { setError, clearError, setLoading } = globalStore;
+    const { user } = storeToRefs(authStore);
+    const { loading, error } = storeToRefs(globalStore);
+    const { setUser, reset, setToken } = authStore;
     async function login(credentials: LoginCredentials) {
         try {
-            loading.value = true;
-            error.value = null;
-            const response = await authService.login(credentials) as ApiResponse; ;
-            user.value = response.data.user;
+            setLoading(globalStore, true);
+            clearError(globalStore);
+            const response = await authService.login(credentials) as unknown as  ApiResponse;
+            if(response.success){
+                setUser(authStore, response.data?.user);
+                setToken(authStore, response.data?.token);
+            }else{
+                setError(globalStore, {
+                    message: response.message,
+                    status: response.status
+                });
+            }
         } catch (err: any) {
-            error.value = err?.response?.data;
+            setError(globalStore, err);
             throw err;
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     }
 
     async function logout() {
         try {
-            loading.value = true;
-            error.value = null;
             await authService.logout();
-            user.value = null;
-        } catch (err) {
-            console.error('Logout failed', err);    
+        } catch (err: any) {
+            setError(globalStore, err);
             throw err;
         } finally {
-            loading.value = false;
+            reset(authStore);
+            clearError(globalStore);
+            setLoading(globalStore, false);
         }
     }
 
     async function checkAuth() {
         try {
-            loading.value = true;
-            error.value = null;
-            user.value = await authService.getUser();
-        } catch (err) {
-            console.error('Check auth failed', err);
-            user.value = null;
+            setLoading(globalStore, true);
+            clearError(globalStore);
+            const response = await authService.getUser() as unknown as ApiResponse;
+            setUser(authStore, response.data?.user);
+        } catch (err: any) {
+            setError(globalStore, err);
+            setUser(authStore, null);
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     }
 
     async function register(data: RegisterData) {
         try {
-            loading.value = true;
-            error.value = null;
-            const response = await authService.register(data) as ApiResponse;
-            user.value = response.data.user;
-        } catch (err) {
-            console.error('Register failed', err);
+            setLoading(globalStore, true);
+            clearError(globalStore);
+            const response = await authService.register(data) as unknown as ApiResponse;
+            user.value = response.data?.user;
+        } catch (err: any) {
+            setError(globalStore, err);
             throw err;
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     }
 
     return {
         user,
-        loading,
-        error,
-        isAuthenticated,
         login,
         logout,
         register,
