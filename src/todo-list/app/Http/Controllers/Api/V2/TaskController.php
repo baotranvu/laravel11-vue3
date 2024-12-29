@@ -22,8 +22,7 @@ class TaskController extends Controller
         
         return $this->successResponse(
             TaskResource::collection(auth()->user()->tasks()->get()),
-            'Tasks retrieved successfully',
-            HttpStatus::OK
+            'Tasks retrieved successfully'
         );
     }
 
@@ -42,7 +41,7 @@ class TaskController extends Controller
     {
         $task = $request->user()->tasks()->create($request->validated());
 
-        return $this->successResponse(TaskResource::make($task), 'Task created successfully', HttpStatus::CREATED);
+        return $this->created(TaskResource::make($task), 'Task created successfully');
     }
 
     /**
@@ -52,7 +51,7 @@ class TaskController extends Controller
     {
         Gate::authorize('view', $task);
 
-        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully', HttpStatus::OK);
+        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully');
     }
 
     /**
@@ -69,11 +68,11 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task)
     {
         if ($request->user()->cannot('update', $task)) {
-            return $this->errorResponse('You are not authorized to update this task', null, HttpStatus::FORBIDDEN);
+            return $this->forbidden('You are not authorized to update this task', null);
         }
         $task->update($request->validated());
 
-        return $this->successResponse(TaskResource::make($task), 'Task updated successfully', HttpStatus::OK);
+        return $this->successResponse(TaskResource::make($task), 'Task updated successfully');
     }
 
     /**
@@ -83,6 +82,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::OK);
+        return $this->noContent();
     }
 }

@@ -8,7 +8,6 @@ use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use App\Traits\ApiResponse;
-use App\Constants\HttpStatus;
 
 
 class TaskController extends Controller
@@ -19,7 +18,7 @@ class TaskController extends Controller
     use ApiResponse;
     public function index()
     {
-        return $this->successResponse(TaskResource::collection(Task::all()), 'Tasks retrieved successfully', HttpStatus::OK);
+        return $this->successResponse(TaskResource::collection(Task::all()), 'Tasks retrieved successfully');
     }
 
     /**
@@ -37,7 +36,7 @@ class TaskController extends Controller
     {
         $task = Task::create($request->validated());
 
-        return $this->successResponse(TaskResource::make($task), 'Task created successfully', HttpStatus::CREATED);
+        return $this->created(TaskResource::make($task), 'Task created successfully');
     }
 
     /**
@@ -45,7 +44,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully', HttpStatus::OK);
+        return $this->successResponse(TaskResource::make($task), 'Task retrieved successfully');
     }
 
     /**
@@ -63,7 +62,7 @@ class TaskController extends Controller
     {
         $task->update($request->validated());
 
-        return $this->successResponse(TaskResource::make($task), 'Task updated successfully', HttpStatus::OK);
+        return $this->successResponse(TaskResource::make($task), 'Task updated successfully');
     }
 
     /**
@@ -73,6 +72,6 @@ class TaskController extends Controller
     {
         $task->delete();
 
-        return $this->successResponse(null, 'Task deleted successfully', HttpStatus::OK);
+        return $this->noContent();
     }
 }

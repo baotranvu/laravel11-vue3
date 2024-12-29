@@ -10,22 +10,19 @@ class CompleteTaskController extends Controller
     /**
      * Handle the incoming request.
      */
+    use ApiResponse;
     public function __invoke(Request $request)
     {
         $task = $request->user()->tasks()->find($request->task);
 
         if (!$task) {
-            return response()->json([
-                'message' => 'Task not found',
-            ], 404);
+            return $this->notFound('Task not found');
         }
 
         $task->update([
             'is_completed' => true,
         ]);
 
-        return response()->json([
-            'message' => 'Task completed',
-        ]);
+        return $this->successResponse(null, 'Task completed');
     }
 }
