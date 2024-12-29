@@ -3,7 +3,7 @@ import { User } from '@/types/Auth';
 
 export interface AuthState {
     user: User | null;
-    isAuthenticated: boolean;
+    readonly isAuthenticated: boolean;
     token: string | null;
 }
 
