@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import type { Task } from '../types/Task';
 import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
 import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
-const tasks = ref<Task[]>([]);
 const showCompletedTasks = ref(true);
-const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, loading, error } = useTaskCard(tasks);
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
 onMounted(async () => {
     await getTasks();
 });
@@ -50,7 +48,7 @@ const filteredTasks = computed(() => {
             </div>
             <!-- Display error state -->
             <div v-else-if="error">
-                <ErrorPage :error="error" @clear-error="error = null" />
+                <ErrorPage :error="error"/>
             </div>
             <!-- Task list -->
             <div v-else class="row">
@@ -61,7 +59,7 @@ const filteredTasks = computed(() => {
                         <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks"/>
                     </div>
                     <!-- List of tasks -->
-                    <div class="mt-4" v-if="tasks.length > 0">
+                    <div class="mt-4" v-if="tasks && tasks.length > 0">
                         <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" @edit-task="handleEditTask" />
                     </div>
                     <!-- No tasks message -->

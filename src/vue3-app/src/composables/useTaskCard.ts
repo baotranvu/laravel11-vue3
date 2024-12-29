@@ -1,54 +1,36 @@
-import { Ref, ref } from 'vue';
-import type { Task } from '../types/Task';
 import TaskService from '../services/TaskService';
 import { debounce } from 'lodash-es';
-
-interface ApiResponse {
-    data?: Task[];
-    message?: string;
-}
-
-export default function useTaskCard(tasks: Ref<Task[]>) {
-    if (!tasks.value) {
-        tasks.value = [];
-    }
-
-    const loading = ref(false);
-    const error = ref<string | null>(null);
+import { ApiResponse } from '@/types/ApiResponse';
+import { useTaskStore } from '@/stores/task';
+import { useGlobalStore } from '@/stores/global';
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import { Task } from '@/types/Task';
+export default function useTaskCard() {
+    const tasksStore = useTaskStore();
+    const globalStore = useGlobalStore();
+    const { tasks} = storeToRefs(tasksStore);
+    const { loading, error } = storeToRefs(globalStore);
+    const { setError, clearError, setLoading } = globalStore;
+    const { setTasks} = tasksStore;
     const retryCount = ref(0);
-
-    const isTaskArray = (data: unknown): data is Task[] => {
-        return Array.isArray(data) && data.every(item =>
-            typeof item === 'object' &&
-            item !== null &&
-            'id' in item &&
-            'name' in item &&
-            'is_completed' in item
-        );
-    };
-
-    const handleError = (message: string, err: any) => {
-        console.error(message, err);
-        error.value = message;
-    };
 
     const toggleTaskCompletion = async (task: Task): Promise<void> => {
         if (loading.value) return;
 
         const originalState = task.is_completed;
         try {
-            loading.value = true;
+            setLoading(globalStore, true);
+            clearError(globalStore);
             const taskToUpdate = tasks.value.find(t => t.id === task.id);
             if (taskToUpdate) taskToUpdate.is_completed = !taskToUpdate.is_completed;
-
             await TaskService.changeTaskStatus(task.id);
         } catch (err: any) {
-            handleError('Failed to toggle task completion', err);
-
+            setError(globalStore,err);
             const taskToReset = tasks.value.find(t => t.id === task.id);
             if (taskToReset) taskToReset.is_completed = originalState;
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     };
 
@@ -65,14 +47,15 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
 
         const deletedTask = tasks.value[deletedTaskIndex];
         try {
-            loading.value = true;
+            setLoading(globalStore, true);
+            clearError(globalStore);
             tasks.value.splice(deletedTaskIndex, 1);
             await TaskService.delete(taskId);
         } catch (err: any) {
-            handleError('Failed to delete task', err);
+            setError(globalStore,err);
             tasks.value.splice(deletedTaskIndex, 0, deletedTask);
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     };
 
@@ -80,20 +63,18 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         if (loading.value) return;
 
         try {
-            loading.value = true;
-            const response = await TaskService.all() as ApiResponse;
-            if (isTaskArray(response)) {
-                tasks.value = response.sort((a, b) => 
-                    new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
-                );
-            } else {
-                tasks.value = [];
-            }
-
+            setLoading(globalStore, true);
+            clearError(globalStore);
+            const response = await TaskService.all() as unknown as ApiResponse;
+            let tasks = response.data?.data;
+            tasks = tasks.sort((a: { created_at: any; }, b: { created_at: any; }) => 
+                new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
+            );
+            setTasks(tasksStore, tasks);
             error.value = null;
             retryCount.value = 0;
         } catch (err: any) {
-            handleError('Failed to load tasks', err);
+            setError(globalStore,err);
 
             if (retryCount.value < 3) {
                 retryCount.value++;
@@ -108,14 +89,14 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         if (loading.value) return;
 
         try {
-            loading.value = true;
+            setLoading(globalStore, true);
+            clearError(globalStore);
             const response = await TaskService.create({ name });
             if (response?.id) tasks.value.unshift(response);
-            error.value = null;
         } catch (err: any) {
-            handleError('Failed to add task', err);
+            setError(globalStore,err);
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     };
 
@@ -124,17 +105,24 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         const originalState = { ...taskToUpdate };
         if (!taskToUpdate || loading.value) return;
         try {
-            loading.value = true;
-            await TaskService.update(taskId, data);
-            error.value = null;
-            // Update the task in the local state
-            Object.assign(taskToUpdate, data);
+            setLoading(globalStore, true);
+            clearError(globalStore);
+            const response = await TaskService.update(taskId, data) as unknown as ApiResponse;
+            if (response) {
+                const updatedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
+                if (updatedTaskIndex !== -1) {
+                    tasks.value[updatedTaskIndex] = response.data?.data;
+                }
+            }
         } catch (err: any) {
-            handleError('Failed to update task', err);
+            setError(globalStore,err);
             // Reset the task to its original state
-            Object.assign(taskToUpdate, originalState);
+            const taskToReset = tasks.value.find(t => t.id === taskId);
+            if (taskToReset) {
+                Object.assign(taskToReset, originalState);
+            }
         } finally {
-            loading.value = false;
+            setLoading(globalStore, false);
         }
     };
 
@@ -148,8 +136,6 @@ export default function useTaskCard(tasks: Ref<Task[]>) {
         handleDeleteTask,
         getTasks,
         debounceHandleAddTask,
-        tasks,
-        loading,
-        error,
+        tasks
     };
 }

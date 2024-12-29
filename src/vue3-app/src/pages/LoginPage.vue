@@ -40,7 +40,7 @@
                         required
                     />
                 </div>
-                <div class="error" v-if="error">{{ error.message }}</div>
+                <div class="error" v-if="error">{{ error?.message }}</div>
                 <button type="submit" :disabled="loading">
                     <span v-if="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
                     {{ isLogin ? 'Login' : 'Register' }}
@@ -58,21 +58,22 @@
 
 <script lang="ts" setup>
 import { ref, reactive, computed } from 'vue'
-import { useAuth } from '@/composables/useAuth'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
-
-
-const emit = defineEmits(['login-success']);
+import { useAuth } from '@/composables/useAuth';
+import { useAuthStore } from '@/stores/auth';
+import { useGlobalStore } from '@/stores/global';
+import { storeToRefs } from 'pinia';
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
+const auth = useAuth()
+const globalStore = useGlobalStore()
+const { loading, error } = storeToRefs(globalStore)
+const { setError, clearError } = globalStore
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(formData.email)
 })
-
-const { login, register, loading, error, isAuthenticated } = useAuth()
-
 const isLogin = ref(true)
-
-
 const formData = reactive({
     name: '',
     email: '',
@@ -82,11 +83,8 @@ const formData = reactive({
 
 const toggleForm = () => {
     isLogin.value = !isLogin.value
-    error.value = null
-    formData.name = ''
-    formData.email = ''
-    formData.password = ''
-    formData.password_confirmation = ''
+    clearError(globalStore)
+    resetFormData()
 }
 
 const resetFormData = () => {
@@ -97,28 +95,30 @@ const resetFormData = () => {
 }
 
 const handleSubmit = async () => {
-    error.value = null
+    clearError(globalStore)
+    if (!isEmailValid.value) {
+       setError(globalStore, { status: 400, message: 'Invalid email' })
+        return
+    }
     
     if (!isLogin.value && formData.password !== formData.password_confirmation) {
-        error.value = { status: 400, message: 'Passwords do not match' }
+        setError(globalStore, { status: 400, message: 'Passwords do not match' })
         return
     }
 
     try {
         if (isLogin.value) {
-            await login(formData as LoginCredentials)
-            if (isAuthenticated.value) {
-                emit('login-success', isAuthenticated.value)
-            }
+            await auth.login(formData as LoginCredentials)
         } else {
-           await register(formData as RegisterData)
-           if(isAuthenticated.value) {
+           await auth.register(formData as RegisterData)
+           if(!error.value && isAuthenticated.value) {
                 alert('Registration successful')
                 toggleForm()
            }
         }
     } catch (e) {
         console.error(e)
+        setError(globalStore, { status: 500, message: 'Something went wrong' })
     }
     resetFormData()
 }

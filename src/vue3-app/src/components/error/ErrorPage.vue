@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ErrorType } from '@/types/error';
+import type { ErrorType } from '@/types/ErrorType';
 
 defineProps<{ error: ErrorType }>()
 const emit = defineEmits(['clear-error']);

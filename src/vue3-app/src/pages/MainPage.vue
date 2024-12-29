@@ -1,6 +1,6 @@
 <template>
     <div class="main-container">
-        <login-page v-if="!isLoggedIn" @login-success="handleLoginSuccess" />
+        <login-page v-if="!isAuthenticated" />
         <task-page v-else />
     </div>
 </template>
@@ -13,19 +13,10 @@
 }
 </style>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import LoginPage from './LoginPage.vue'
 import TaskPage from './TaskPage.vue'
-import { useAuth } from '../composables/useAuth'
-
-const { checkAuth } = useAuth()
-const isLoggedIn = ref(false)
-
-onMounted(() => {
-    checkAuth()
-})
-
-const handleLoginSuccess = (isAuthenticated:boolean) => {
-    isLoggedIn.value = isAuthenticated
-}
+import { useAuthStore } from '../stores/auth'
+import { storeToRefs } from 'pinia'
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
 </script>
