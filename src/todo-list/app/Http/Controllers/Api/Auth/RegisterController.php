@@ -17,6 +17,6 @@ class RegisterController extends Controller
     {
         User::create($request->getData());
 
-        return $this->successResponse(null, 'You are registered', HttpStatus::CREATED);
+        return $this->created(null, 'User created successfully');
     }
 }

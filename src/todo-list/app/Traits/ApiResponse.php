@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-
 trait ApiResponse
 {
     /**
@@ -16,13 +15,14 @@ trait ApiResponse
      * @param bool $status
      * @return array
      */
-    protected function buildResponse($data = null, ?string $message = null, int $code = 200, bool $status = true): array
+    protected function buildResponse($data = null, ?string $message = null, int $status = Response::HTTP_OK, bool $success = true): array
     {
         return [
-            'success' => $status,
-            'code' => $code,
+            'success' => $success,
+            'status' => $status,
             'message' => $message,
             'data' => $data,
+            'errors' => null,
         ];
     }
 
@@ -34,11 +34,10 @@ trait ApiResponse
      * @param int $code
      * @return JsonResponse
      */
-    public function successResponse($data = null, ?string $message = null, int $code = Response::HTTP_OK): JsonResponse
+    public function successResponse($data = null, ?string $message = null, int $status = Response::HTTP_OK): JsonResponse
     {
         return response()->json(
-            $this->buildResponse($data, $message, $code),
-            $code
+            $this->buildResponse($data, $message, $status, true),
         );
     }
 
@@ -50,11 +49,10 @@ trait ApiResponse
      * @param int $code
      * @return JsonResponse
      */
-    public function errorResponse(?string $message = null, $errors = null, int $code = Response::HTTP_BAD_REQUEST): JsonResponse
+    public function errorResponse(?string $message = null, $errors = null, int $status = Response::HTTP_BAD_REQUEST): JsonResponse
     {
         return response()->json(
-            $this->buildResponse($errors, $message, $code, false),
-            $code
+            $this->buildResponse($errors, $message, $status, false),
         );
     }
 
@@ -133,11 +131,10 @@ trait ApiResponse
     /**
      * Return a no content response
      *
-     * @param string|null $message
      * @return JsonResponse
      */
-    public function noContent(?string $message = 'No content'): JsonResponse
+    public function noContent(): JsonResponse
     {
-        return $this->successResponse(null, $message, Response::HTTP_NO_CONTENT);
+        return $this->successResponse(null, null, Response::HTTP_NO_CONTENT);
     }
 }
