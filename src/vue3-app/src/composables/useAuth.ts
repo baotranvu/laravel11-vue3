@@ -52,9 +52,10 @@ export function useAuth() {
             globalStore.setLoading(true);
             globalStore.setError(null);
             const response = await authService.getUser() as unknown as ApiResponse;
-            authStore.setUser(response.data?.user);
+            if(response?.success){
+                authStore.setUser(response.data?.user);
+            }
         } catch (err: any) {
-            globalStore.setError(err);
             authStore.setUser(null);
         } finally {
             globalStore.setLoading(false);
