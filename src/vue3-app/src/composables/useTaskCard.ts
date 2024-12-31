@@ -89,8 +89,8 @@ export default function useTaskCard() {
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
-            const response = await TaskService.create({ name });
-            if (response?.id) tasks.value.unshift(response);
+            const response = await TaskService.create({ name }) as unknown as ApiResponse;
+            if (response.success) tasks.value.unshift(response.data);
         } catch (err: any) {
             globalStore.setError(err);
         } finally {

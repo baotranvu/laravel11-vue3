@@ -2,7 +2,7 @@
 import ResourceService from "./ResourceService";
 import { Task, TaskPayload } from "@/types/Task";
 import api from "@/http/api";
-const API_VERSION = "v1";
+const API_VERSION = "v2";
 class TaskService extends ResourceService<Task, TaskPayload> {
   constructor() {
     super(`${API_VERSION}/tasks`);
