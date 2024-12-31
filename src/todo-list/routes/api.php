@@ -15,7 +15,7 @@ Route::group(['prefix' => 'v1'], base_path('routes/Api/V1/Task.php'));
 Route::group(['prefix' => 'auth'], base_path('routes/Api/Auth/Auth.php'));
 
 //user
-Route::group(['prefix' => 'user'], function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-})->midelleware('auth:sanctum');
+});
 
