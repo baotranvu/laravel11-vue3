@@ -5,7 +5,7 @@ export interface GlobalState {
     error: ErrorType | null;
 }
 
-export const state = () : GlobalState => ({
+export const initialState: GlobalState = {
     loading: false,
     error: null,
-});
+};

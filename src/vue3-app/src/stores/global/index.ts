@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-import { state } from './state';
-import actions from './actions';
-import getters from './getters';
+import { initialState } from './state';
+import { actions } from './actions';
+import { getters } from './getters';
 
 export const useGlobalStore = defineStore('global', {
-    state,
-    actions,
+    state: () => ({ ...initialState }),
     getters,
+    actions,
 });
