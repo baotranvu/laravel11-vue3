@@ -106,11 +106,8 @@ export default function useTaskCard() {
             globalStore.setLoading(true);
             globalStore.setError(null);
             const response = await TaskService.update(taskId, data) as unknown as ApiResponse;
-            if (response) {
-                const updatedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
-                if (updatedTaskIndex !== -1) {
-                    tasks.value[updatedTaskIndex] = response.data?.data;
-                }
+            if (response.success) {
+                tasksStore.updateTask(response.data);
             }
         } catch (err: any) {
             globalStore.setError(err);
