@@ -14,8 +14,4 @@ export const actions = {
         this.loading = false;
         this.error = null;
     },
-
-    clearError(this: GlobalState): void {
-        this.error = null;
-    },
 } as const;

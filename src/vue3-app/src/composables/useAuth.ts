@@ -14,7 +14,7 @@ export function useAuth() {
     async function login(credentials: LoginCredentials) {
         try {
             globalStore.setLoading(true);
-            globalStore.clearError();
+            globalStore.setError(null);
             const response = await authService.login(credentials) as unknown as ApiResponse;
             if(response.success){
                 authStore.setUser(response.data?.user);
@@ -41,7 +41,8 @@ export function useAuth() {
             throw err;
         } finally {
             authStore.reset();
-            globalStore.clearError();
+            //clear error
+            globalStore.setError(null);
             globalStore.setLoading(false);
         }
     }
@@ -49,7 +50,7 @@ export function useAuth() {
     async function checkAuth() {
         try {
             globalStore.setLoading(true);
-            globalStore.clearError();
+            globalStore.setError(null);
             const response = await authService.getUser() as unknown as ApiResponse;
             authStore.setUser(response.data?.user);
         } catch (err: any) {
@@ -63,7 +64,7 @@ export function useAuth() {
     async function register(data: RegisterData) {
         try {
             globalStore.setLoading(true);
-            globalStore.clearError();
+            globalStore.setError(null);
             const response = await authService.register(data) as unknown as ApiResponse;
             authStore.setUser(response.data?.user);
         } catch (err: any) {
