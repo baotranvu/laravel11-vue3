@@ -15,6 +15,6 @@ class CompleteTaskController extends Controller
         $task->is_completed = !$task->is_completed;
         $task->save();
 
-        return $this->successResponse(null, 'Task completed', HttpStatus::OK);
+        return $this->successResponse(null, 'Task completed');
     }
 }
