@@ -1,18 +1,17 @@
 import { GlobalState } from "./state";
 import { ErrorType } from "@/types/ErrorType";
 
-export default {
-    setLoading(state: GlobalState, loading: boolean) {
-        state.loading = loading;
+export const actions = {
+    setLoading(this: GlobalState, loading: boolean): void {
+        this.loading = loading;
     },
-    setError(state: GlobalState, error: ErrorType | null) {
-        state.error = error;
+
+    setError(this: GlobalState, error: ErrorType | null): void {
+        this.error = error;
     },
-    reset(state: GlobalState) {
-        state.loading = false;
-        state.error = null;
+
+    reset(this: GlobalState): void {
+        this.loading = false;
+        this.error = null;
     },
-    clearError(state: GlobalState) {
-        state.error = null;
-    },
-}
+} as const;

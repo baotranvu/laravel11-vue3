@@ -16,27 +16,27 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
 
   async get(id: number): Promise<T> {
     const response = await api.get(`${this.resource}/${id}`);
-    return response.data.data;
+    return response.data;
   }
 
   async all(): Promise<T[]> {
     const response = await api.get(this.resource);
-    return response.data.data;
+    return response.data;
   }
 
   async create(data: CreateDTO): Promise<T> {
     const response = await api.post(this.resource, data);
-    return response.data.data;
+    return response.data;
   }
 
   async update(id: number, data: Partial<CreateDTO>): Promise<T> {
     const response = await api.put(`${this.resource}/${id}`, data);
-    return response.data.data;
+    return response.data;
   }
 
   async updateAll(data: Partial<CreateDTO>): Promise<T[]> {
     const response = await api.put(this.resource, data);
-    return response.data.data;
+    return response.data;
   }
 
   async delete(id: number): Promise<void> {

@@ -40,7 +40,7 @@
                         required
                     />
                 </div>
-                <div class="error" v-if="error">{{ error?.message }}</div>
+                <div class="error" v-if="hasError">{{ error?.message }}</div>
                 <button type="submit" :disabled="loading">
                     <span v-if="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
                     {{ isLogin ? 'Login' : 'Register' }}
@@ -67,8 +67,7 @@ const authStore = useAuthStore()
 const { isAuthenticated } = storeToRefs(authStore)
 const auth = useAuth()
 const globalStore = useGlobalStore()
-const { loading, error } = storeToRefs(globalStore)
-const { setError, clearError } = globalStore
+const { loading, error, hasError } = storeToRefs(globalStore)
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(formData.email)
@@ -83,7 +82,7 @@ const formData = reactive({
 
 const toggleForm = () => {
     isLogin.value = !isLogin.value
-    clearError(globalStore)
+    globalStore.setError(null)
     resetFormData()
 }
 
@@ -95,14 +94,14 @@ const resetFormData = () => {
 }
 
 const handleSubmit = async () => {
-    clearError(globalStore)
+    globalStore.setError(null)
     if (!isEmailValid.value) {
-       setError(globalStore, { status: 400, message: 'Invalid email' })
+       globalStore.setError({ status: 400, message: 'Invalid email' })
         return
     }
     
     if (!isLogin.value && formData.password !== formData.password_confirmation) {
-        setError(globalStore, { status: 400, message: 'Passwords do not match' })
+        globalStore.setError({ status: 400, message: 'Passwords do not match' })
         return
     }
 
@@ -118,7 +117,7 @@ const handleSubmit = async () => {
         }
     } catch (e) {
         console.error(e)
-        setError(globalStore, { status: 500, message: 'Something went wrong' })
+        globalStore.setError({ status: 500, message: 'Something went wrong' })
     }
     resetFormData()
 }

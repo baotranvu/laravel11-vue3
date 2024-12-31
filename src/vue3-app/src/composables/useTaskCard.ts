@@ -9,10 +9,8 @@ import { Task } from '@/types/Task';
 export default function useTaskCard() {
     const tasksStore = useTaskStore();
     const globalStore = useGlobalStore();
-    const { tasks} = storeToRefs(tasksStore);
+    const { tasks } = storeToRefs(tasksStore);
     const { loading, error } = storeToRefs(globalStore);
-    const { setError, clearError, setLoading } = globalStore;
-    const { setTasks} = tasksStore;
     const retryCount = ref(0);
 
     const toggleTaskCompletion = async (task: Task): Promise<void> => {
@@ -20,17 +18,17 @@ export default function useTaskCard() {
 
         const originalState = task.is_completed;
         try {
-            setLoading(globalStore, true);
-            clearError(globalStore);
+            globalStore.setLoading(true);
+            globalStore.setError(null);
             const taskToUpdate = tasks.value.find(t => t.id === task.id);
             if (taskToUpdate) taskToUpdate.is_completed = !taskToUpdate.is_completed;
             await TaskService.changeTaskStatus(task.id);
         } catch (err: any) {
-            setError(globalStore,err);
+            globalStore.setError(err);
             const taskToReset = tasks.value.find(t => t.id === task.id);
             if (taskToReset) taskToReset.is_completed = originalState;
         } finally {
-            setLoading(globalStore, false);
+            globalStore.setLoading(false);
         }
     };
 
@@ -47,15 +45,15 @@ export default function useTaskCard() {
 
         const deletedTask = tasks.value[deletedTaskIndex];
         try {
-            setLoading(globalStore, true);
-            clearError(globalStore);
+            globalStore.setLoading(true);
+            globalStore.setError(null);
             tasks.value.splice(deletedTaskIndex, 1);
             await TaskService.delete(taskId);
         } catch (err: any) {
-            setError(globalStore,err);
+            globalStore.setError(err);
             tasks.value.splice(deletedTaskIndex, 0, deletedTask);
         } finally {
-            setLoading(globalStore, false);
+            globalStore.setLoading(false);
         }
     };
 
@@ -63,18 +61,18 @@ export default function useTaskCard() {
         if (loading.value) return;
 
         try {
-            setLoading(globalStore, true);
-            clearError(globalStore);
+            globalStore.setLoading(true);
+            globalStore.setError(null);
             const response = await TaskService.all() as unknown as ApiResponse;
-            let tasks = response.data?.data;
+            let tasks = response.data;
             tasks = tasks.sort((a: { created_at: any; }, b: { created_at: any; }) => 
                 new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
             );
-            setTasks(tasksStore, tasks);
+            tasksStore.setTasks(tasks);
             error.value = null;
             retryCount.value = 0;
         } catch (err: any) {
-            setError(globalStore,err);
+            globalStore.setError(err);
 
             if (retryCount.value < 3) {
                 retryCount.value++;
@@ -89,14 +87,14 @@ export default function useTaskCard() {
         if (loading.value) return;
 
         try {
-            setLoading(globalStore, true);
-            clearError(globalStore);
+            globalStore.setLoading(true);
+            globalStore.setError(null);
             const response = await TaskService.create({ name });
             if (response?.id) tasks.value.unshift(response);
         } catch (err: any) {
-            setError(globalStore,err);
+            globalStore.setError(err);
         } finally {
-            setLoading(globalStore, false);
+            globalStore.setLoading(false);
         }
     };
 
@@ -105,8 +103,8 @@ export default function useTaskCard() {
         const originalState = { ...taskToUpdate };
         if (!taskToUpdate || loading.value) return;
         try {
-            setLoading(globalStore, true);
-            clearError(globalStore);
+            globalStore.setLoading(true);
+            globalStore.setError(null);
             const response = await TaskService.update(taskId, data) as unknown as ApiResponse;
             if (response) {
                 const updatedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
@@ -115,14 +113,14 @@ export default function useTaskCard() {
                 }
             }
         } catch (err: any) {
-            setError(globalStore,err);
+            globalStore.setError(err);
             // Reset the task to its original state
             const taskToReset = tasks.value.find(t => t.id === taskId);
             if (taskToReset) {
                 Object.assign(taskToReset, originalState);
             }
         } finally {
-            setLoading(globalStore, false);
+            globalStore.setLoading(false);
         }
     };
 

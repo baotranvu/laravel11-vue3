@@ -4,6 +4,6 @@ export interface TaskState {
     tasks: Task[];
 }
 
-export const state = () : TaskState => ({
+export const initialState: TaskState = {
     tasks: [],
-});
+};

@@ -1,15 +1,15 @@
 import { AuthState } from "./state";
 import { User } from "@/types/Auth";
 
-export default {
-    setUser(state: AuthState, user: User | null) {
-        state.user = user;
+export const actions = {
+    setUser(this: AuthState, user: User | null) {
+        this.user = user;
     },
-    setToken(state: AuthState, token: string | null) {
-        state.token = token;
+    setToken(this: AuthState, token: string | null) {
+        this.token = token;
     },
-    reset(state: AuthState) {
-        state.user = null;
-        state.token = null;
+    reset(this: AuthState) {
+        this.user = null;
+        this.token = null;
     },
-}
+} as const;

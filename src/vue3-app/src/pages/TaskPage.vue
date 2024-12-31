@@ -4,6 +4,13 @@ import useTaskCard from '../composables/useTaskCard';
 import TaskCard from '../components/Task/TaskCard.vue';
 import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
+import { useGlobalStore } from '../stores/global';
+import { useTaskStore } from '../stores/task';
+import { storeToRefs } from 'pinia';
+const globalStore = useGlobalStore();
+const taskStore = useTaskStore();
+const { loading, error } = storeToRefs(globalStore);
+const { getUncompletedTasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
 onMounted(async () => {
@@ -32,7 +39,7 @@ const handleEditTask = (taskId:number, newName:string) => {
 
 // Filter tasks based on completion status
 const filteredTasks = computed(() => {
-    return showCompletedTasks.value ? tasks.value : tasks.value.filter(task => !task.is_completed);
+    return showCompletedTasks.value ? tasks.value : getUncompletedTasks.value;
 });
 </script>
 <template>

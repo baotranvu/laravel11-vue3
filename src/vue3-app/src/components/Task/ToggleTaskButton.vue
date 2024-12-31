@@ -13,7 +13,7 @@ const handleToggleCompletedTasks = () => {
                 <v-switch
                         v-model="showCompletedTasks"
                         color="primary"
-                        :label="showCompletedTasks ? 'Show completed tasks' : 'Hide completed tasks'"
+                        :label="showCompletedTasks ? 'Hide completed tasks' : 'Show completed tasks'"
                         @change="handleToggleCompletedTasks"
                 ></v-switch>
         </v-container>
