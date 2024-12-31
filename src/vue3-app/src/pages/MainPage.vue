@@ -18,6 +18,7 @@ import TaskPage from './TaskPage.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAuth } from '@/composables/useAuth'
 import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
 const authStore = useAuthStore()
 const auth = useAuth()
 const { isAuthenticated } = storeToRefs(authStore)
