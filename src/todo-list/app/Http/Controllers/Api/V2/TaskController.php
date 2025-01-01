@@ -65,7 +65,7 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(StoreTaskRequest $request, Task $task)
     {
         if ($request->user()->cannot('update', $task)) {
             return $this->forbidden('You are not authorized to update this task', null);
