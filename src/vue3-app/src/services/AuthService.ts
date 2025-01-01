@@ -3,9 +3,11 @@ import { api } from '@/http/api';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { useAuthHelper } from '@/utils/AuthHelper';
+import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
     private readonly apiUrl = '/auth';
+    private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://laravel.test:8080';
     private constructor() {}
 
     static getInstance(): AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     }
 
     async login(credentials: LoginCredentials): Promise<User> {
+        await axios.get(`${this.baseUrl}/sanctum/csrf-cookie`);
         const response = await api.post(`${this.apiUrl}/login`, credentials);
         return response.data;
     }
