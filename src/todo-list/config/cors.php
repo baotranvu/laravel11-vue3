@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://todo.test:5173'],
+    'allowed_origins' => [env('FRONTEND_URL'), 'http://todo.test:5173'],
 
     'allowed_origins_patterns' => [],
 

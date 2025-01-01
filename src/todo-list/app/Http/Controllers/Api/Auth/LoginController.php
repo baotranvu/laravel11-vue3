@@ -19,11 +19,11 @@ class LoginController extends Controller
         if (!auth()->attempt($request->only('email', 'password'))) {
             return $this->unauthorized('User name or password is incorrect', null);
         }
-        $token = auth()->user()->createToken('API Token')->plainTextToken;
+        $token = auth()->user()->createToken('api_token')->plainTextToken;
         $cookie = cookie('api_token', $token, 60); 
         return $this->successResponse([
                 'token' => $token,
                 'user' => auth()->user()
-        ], 'Login successful')->withCookie($cookie->withSecure(false)->withHttpOnly(false));
+        ], 'Login successful')->withCookie($cookie);
     }
 }
