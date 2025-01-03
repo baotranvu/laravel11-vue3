@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 export default defineConfig({
   plugins: [vue()],
   server: {
-    host: 'todo.test', // This is the hostname that will be used in the browser
+    host: 'todo-list-dev.com', // This is the hostname that will be used in the browser
   },
   resolve: {
     alias: {
