@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useAuthHelper } from '@/utils/AuthHelper';
 export class AuthService {
     private static instance: AuthService;
-    private readonly apiUrl = '/auth';
+    private readonly apiUrl = 'api/auth';
     private constructor() {}
 
     static getInstance(): AuthService {
