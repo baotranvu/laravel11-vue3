@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 const API_CONFIG: AxiosRequestConfig = {
-    baseURL: `${import.meta.env.VITE_API_BASE_URL || "http://laravel.test:8080/api"}/`,
+    baseURL: `${import.meta.env.VITE_API_BASE_URL || "http://api.todo-list.com:8080"}/`,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

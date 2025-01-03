@@ -1,6 +1,5 @@
 // src/services/ResourceService.ts
 import api from "../http/api";
-import { useAuthHelper } from "@/utils/AuthHelper";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 // Generic interface for any resource with an ID
