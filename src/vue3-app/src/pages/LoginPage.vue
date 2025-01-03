@@ -110,14 +110,14 @@ const handleSubmit = async () => {
             await auth.login(formData as LoginCredentials)
         } else {
            await auth.register(formData as RegisterData)
-           if(!error.value && isAuthenticated.value) {
+           if(!hasError.value) {
                 alert('Registration successful')
                 toggleForm()
            }
         }
-    } catch (e) {
-        console.error(e)
-        globalStore.setError({ status: 500, message: 'Something went wrong' })
+    } catch (e: any) {
+        const error = e?.response?.data
+        globalStore.setError({ status: error?.status || 500, message: error?.message || 'Something went wrong' })
     }
     resetFormData()
 }
