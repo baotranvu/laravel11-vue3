@@ -60,11 +60,8 @@
 import { ref, reactive, computed } from 'vue'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
 import { useAuth } from '@/composables/useAuth';
-import { useAuthStore } from '@/stores/auth';
 import { useGlobalStore } from '@/stores/global';
 import { storeToRefs } from 'pinia';
-const authStore = useAuthStore()
-const { isAuthenticated } = storeToRefs(authStore)
 const auth = useAuth()
 const globalStore = useGlobalStore()
 const { loading, error, hasError } = storeToRefs(globalStore)
@@ -110,14 +107,14 @@ const handleSubmit = async () => {
             await auth.login(formData as LoginCredentials)
         } else {
            await auth.register(formData as RegisterData)
-           if(!error.value && isAuthenticated.value) {
+           if(!hasError.value) {
                 alert('Registration successful')
                 toggleForm()
            }
         }
-    } catch (e) {
-        console.error(e)
-        globalStore.setError({ status: 500, message: 'Something went wrong' })
+    } catch (e: any) {
+        const error = e?.response?.data
+        globalStore.setError({ status: error?.status || 500, message: error?.message || 'Something went wrong' })
     }
     resetFormData()
 }

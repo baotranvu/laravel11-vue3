@@ -2,12 +2,11 @@ import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import { api } from '@/http/api';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
-import { useAuthHelper } from '@/utils/AuthHelper';
 import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
-    private readonly apiUrl = '/auth';
-    private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://laravel.test:8080';
+    private readonly apiUrl = 'api/auth';
+    private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://api.todo-list.com:8080';
     private constructor() {}
 
     static getInstance(): AuthService {
@@ -44,16 +43,14 @@ export class AuthService {
         const authStore = useAuthStore();
         const { token } = storeToRefs(authStore);
         if (!token.value) {
-            const { getCookie } = useAuthHelper();
-            const tokenFromCookie = getCookie('api_token') ?? null;
-            if (!tokenFromCookie) {
-                console.log('No token found');
+            const tokenFromSession = sessionStorage.getItem('api_token') ?? null;
+            if (!tokenFromSession) {
                 return null;
             }
-            token.value = tokenFromCookie;
+            token.value = tokenFromSession;
         }
         api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
-        const response = await api.get(`/user`);
+        const response = await api.get(`api/user`);
         return response.data;
     }
 }

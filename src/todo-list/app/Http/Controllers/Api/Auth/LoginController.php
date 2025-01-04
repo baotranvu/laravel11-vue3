@@ -19,11 +19,15 @@ class LoginController extends Controller
         if (!auth()->attempt($request->only('email', 'password'))) {
             return $this->unauthorized('User name or password is incorrect', null);
         }
-        $token = auth()->user()->createToken('API Token')->plainTextToken;
-        $cookie = cookie('api_token', $token, 60); 
+        if(!auth()->user()->hasVerifiedEmail()) {
+            return $this->unauthorized('Please verify your email', null);
+        }
+        $token = auth()->user()->createToken('api_token')->plainTextToken;
+        //init cookie
+        $cookie = cookie('api_token', $token, 15, null, null, false, true);
         return $this->successResponse([
                 'token' => $token,
                 'user' => auth()->user()
-        ], 'Login successful')->withCookie($cookie->withSecure(false)->withHttpOnly(false));
+        ], 'Login successful')->withCookie($cookie);
     }
 }

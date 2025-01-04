@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import useTaskCard from '../composables/useTaskCard';
-import TaskCard from '../components/Task/TaskCard.vue';
-import AddNewTaskInput from '../components/Task/AddNewTaskInput.vue';
-import ToggleTaskButton from '../components/Task/ToggleTaskButton.vue';
-import { useGlobalStore } from '../stores/global';
-import { useTaskStore } from '../stores/task';
+import useTaskCard from '@/composables/useTaskCard';
+import TaskCard from '@/components/Task/TaskCard.vue';
+import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
+import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
+import Navbar from '@/components/Navbar.vue';
+import ErrorPage from './ErrorPage.vue'
+import { useGlobalStore } from '@/stores/global';
+import { useTaskStore } from '@/stores/task';
 import { storeToRefs } from 'pinia';
 const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
-const { loading, error } = storeToRefs(globalStore);
+const { loading, error, hasError } = storeToRefs(globalStore);
 const { getUncompletedTasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
@@ -44,7 +46,8 @@ const filteredTasks = computed(() => {
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
-        <div class="container">
+        <Navbar />
+        <div class="container mt-4">
             <!-- Display loading state -->
             <div v-if="loading">
                 <output class="d-flex justify-content-center items-center">
@@ -54,8 +57,8 @@ const filteredTasks = computed(() => {
                 </output>
             </div>
             <!-- Display error state -->
-            <div v-else-if="error">
-                <ErrorPage :error="error"/>
+            <div v-else-if="hasError">
+                <ErrorPage />
             </div>
             <!-- Task list -->
             <div v-else class="row">

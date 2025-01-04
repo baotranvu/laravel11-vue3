@@ -19,6 +19,7 @@ export function useAuth() {
             if(response.success){
                 authStore.setUser(response.data?.user);
                 authStore.setToken(response.data?.token);
+                sessionStorage.setItem('api_token', response.data?.token);
             }else{
                 globalStore.setError({
                     message: response.message,
@@ -56,6 +57,7 @@ export function useAuth() {
                 authStore.setUser(response.data?.user);
             }
         } catch (err: any) {
+            sessionStorage.removeItem('api_token');
             authStore.setUser(null);
         } finally {
             globalStore.setLoading(false);

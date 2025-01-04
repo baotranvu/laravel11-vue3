@@ -3,7 +3,8 @@ import { Task } from '../../types/Task';  // Import the Task interface
 import { ref } from 'vue';
 
 defineProps<{ task: Task}>()
-
+const isEdit = ref(false);
+const originalTaskName = ref('');
 const emit = defineEmits(['toggle-task-completion', 'delete-task', 'edit-task'])
 
 const toggleTaskCompletion = (task: Task) => {
@@ -21,14 +22,23 @@ const editTask = (taskId: number, newName: string) => {
     isEdit.value = false;
 }
 
-const isEdit = ref(false);
+const handleEdit = (task: Task):void => {
+    isEdit.value = true;
+    originalTaskName.value = task.name
+}
+
+const handleCancel = (task: Task) => {
+    isEdit.value = false;
+    task.name = originalTaskName.value;
+}
+
 </script>
 
 <template>
     <div class="card mt-2" :class="{ 'bg-light': task.is_completed }" aria-label="Task card">
         <ul class="list-group list-group-flush">
             <li class="list-group-item py-3">
-                <div class="d-flex justify-content-start align-items-center" v-if="!isEdit">
+                <div class="d-flex justify-content-start align-items-center" v-if="!isEdit" @dblclick="handleEdit(task)">
                     <input class="form-check-input mt-0" type="checkbox" role="switch"
                         aria-label="Task completion checkbox" :checked="task.is_completed"
                         @change="toggleTaskCompletion(task)" />
@@ -45,11 +55,11 @@ const isEdit = ref(false);
                 <div class="d-flex justify-content-start align-items-center" v-else>
                     <label for="new-task-input" class="visually-hidden">New task name</label>
                     <input id="new-task-input" type="text" class="form-control form-control-md padding-right-lg"
-                        placeholder="Change the task name. Press enter to save." v-model.trim="task.name" @keyup.enter="editTask(task.id, task.name)"
+                        placeholder="Change the task name. Press enter to save." v-model.trim="task.name" @keyup.enter="editTask(task.id, task.name)" @keyup.escape="handleCancel(task)"
                         maxlength="100" aria-describedby="task-input-help" required />
                 </div>
                 <div class="task-actions" v-if="!isEdit">
-                    <EditButton :itemId="task.id" @click="isEdit = true" />
+                    <EditButton :itemId="task.id" @click="handleEdit(task)" />
                     <DeleteButton @item-delete="deleteTask" :itemId="task.id" />
                 </div>
             </li>

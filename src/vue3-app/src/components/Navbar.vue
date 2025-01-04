@@ -27,12 +27,25 @@
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a href="#" class="btn btn-outline-secondary ms-2"
-                            >Logout</a
-                        >
+                        <a  
+                            href="javascript:void(0)" 
+                            class="btn btn-outline-secondary ms-2"
+                            @click="logout"
+                            >Logout
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 </template>
+<script setup lang="ts">
+import { useAuth } from '@/composables/useAuth';
+const auth = useAuth()
+const logout = () => {
+    if( confirm('Are you sure you want to logout?')){
+        auth.logout()
+        sessionStorage.clear()
+    }
+}
+</script>

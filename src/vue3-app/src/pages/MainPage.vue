@@ -16,13 +16,16 @@
 import LoginPage from './LoginPage.vue'
 import TaskPage from './TaskPage.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useGlobalStore } from '@/stores/global'
 import { useAuth } from '@/composables/useAuth'
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
 const authStore = useAuthStore()
+const globalStore = useGlobalStore()
 const auth = useAuth()
 const { isAuthenticated } = storeToRefs(authStore)
 onMounted(() => {
     auth.checkAuth()
+    globalStore.setError(null)
 })
 </script>
