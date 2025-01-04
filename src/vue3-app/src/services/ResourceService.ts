@@ -1,7 +1,6 @@
 // src/services/ResourceService.ts
 import api from "../http/api";
-import { useAuthStore } from "@/stores/auth";
-import { storeToRefs } from "pinia";
+import { useAuthStore } from "../stores/auth";
 // Generic interface for any resource with an ID
 interface Resource {
   id: number;
@@ -14,6 +13,11 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
 
   constructor(resource: string) {
     this.resource = resource;
+    const authStore = useAuthStore();
+    const token = authStore.getToken;
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
   }
 
   async get(id: number): Promise<T> {
@@ -45,19 +49,5 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     await api.delete(`${this.resource}/${id}`);
   }
 }
-
-api.interceptors.request.use((config) => {
-    const authstore = useAuthStore();
-    const { token } = storeToRefs(authstore);
-    // Check if a specific header exists
-    if (!config.headers['Authorization']) {
-        if (token.value) {
-            config.headers['Authorization'] = `Bearer ${token.value}`;
-        } else {
-            console.warn('Authorization header is missing!');
-        }
-    }
-    return config;
-});
 
 export default ResourceService;

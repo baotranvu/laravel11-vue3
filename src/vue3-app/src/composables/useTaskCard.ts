@@ -58,8 +58,7 @@ export default function useTaskCard() {
     };
 
     const getTasks = async () => {
-        if (loading.value) return;
-
+        
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
@@ -72,7 +71,10 @@ export default function useTaskCard() {
             error.value = null;
             retryCount.value = 0;
         } catch (err: any) {
-            globalStore.setError(err);
+            globalStore.setError({
+                status: err.status,
+                message: err.response.data.message
+            });
 
             if (retryCount.value < 3) {
                 retryCount.value++;
