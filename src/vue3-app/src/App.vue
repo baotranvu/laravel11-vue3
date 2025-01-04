@@ -1,11 +1,10 @@
 
 <script setup>
-import MainPage from "@/pages/MainPage.vue";
 import AppFooter from "@/components/AppFooter.vue";
 
 </script>
 <template>
-    <MainPage />
+    <router-view></router-view>
     <AppFooter />
 </template>
 

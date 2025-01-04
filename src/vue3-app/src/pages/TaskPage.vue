@@ -11,7 +11,7 @@ import { useTaskStore } from '@/stores/task';
 import { storeToRefs } from 'pinia';
 const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
-const { loading, error, hasError } = storeToRefs(globalStore);
+const { loading, hasError } = storeToRefs(globalStore);
 const { getUncompletedTasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
