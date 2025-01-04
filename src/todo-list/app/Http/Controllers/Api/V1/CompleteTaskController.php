@@ -12,6 +12,11 @@ class CompleteTaskController extends Controller
     public function __invoke(Request $request)
     {
         $task = Task::find($request->id);
+
+        if (!$task) {
+            return $this->notFound('Task not found');
+        }
+
         $task->is_completed = !$task->is_completed;
         $task->save();
 
