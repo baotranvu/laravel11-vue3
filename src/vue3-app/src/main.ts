@@ -4,7 +4,6 @@ import App from './App.vue'
 import globalComponents from './global-components'
 // Import Vuetify's core and individual components
 import { createVuetify } from 'vuetify';
-import 'vuetify/styles'; // Import Vuetify styles
 import '@mdi/font/css/materialdesignicons.css'; // Material Design Icons
 import { VContainer, VSwitch, VDialog, VCard, VCardText, VCardActions, VSpacer, VBtn, VTextField } from 'vuetify/components';
 //import pinia
