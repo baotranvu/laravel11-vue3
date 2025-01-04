@@ -9,7 +9,7 @@ import { VContainer, VSwitch, VDialog, VCard, VCardText, VCardActions, VSpacer, 
 //import pinia
 import { createPinia } from 'pinia'
 
-
+import router from '@/router';
 
 // Create a new Vuetify instance
 // Create the Vuetify instance
@@ -33,4 +33,5 @@ const app = createApp(App)
 app.use(globalComponents)
 app.use(vuetify)
 app.use(pinia)
+app.use(router)
 app.mount('#app')

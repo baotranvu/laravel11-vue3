@@ -6,13 +6,13 @@
           <p class="text-xl text-gray-700 mb-2">{{ message }}</p>
           <p class="text-gray-500"></p>
         </div>
-        <button 
-          @click="goBack" 
+        <router-link
+          to="/" 
           class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center mx-auto"
         >
           <span class="mr-2">←</span>
-          Go Back
-        </button>
+          Back to Home
+        </router-link>
       </div>
     </div>
 </template>
@@ -20,14 +20,12 @@
 <script setup lang="ts">
     import { ref } from 'vue';
     import { useGlobalStore } from '@/stores/global';
-    const { error } = useGlobalStore();
-    const statusCode = ref(error?.status || 'Error');
-    const message = ref(error?.message || 'An unexpected error occurred.');
 
-    const goBack = () => {
-    //back to landing page
-    window.location.href = '/';
-    };
+    const { error } = useGlobalStore();
+    const statusCode  = ref(error?.status || 404);
+    const message = ref(error?.message || 'Not Found');
+
+    
 </script>
 
 <style scoped>

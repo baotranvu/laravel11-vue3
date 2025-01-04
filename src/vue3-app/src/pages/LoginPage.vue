@@ -57,10 +57,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
 import { useAuth } from '@/composables/useAuth';
 import { useGlobalStore } from '@/stores/global';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+const router = useRouter()
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
 import { storeToRefs } from 'pinia';
 const auth = useAuth()
 const globalStore = useGlobalStore()
@@ -105,6 +110,9 @@ const handleSubmit = async () => {
     try {
         if (isLogin.value) {
             await auth.login(formData as LoginCredentials)
+            if(!hasError.value) {
+                router.push({ name: 'home' })
+            }
         } else {
            await auth.register(formData as RegisterData)
            if(!hasError.value) {
@@ -118,6 +126,15 @@ const handleSubmit = async () => {
     }
     resetFormData()
 }
+
+onMounted(async () => {
+    globalStore.setError(null)
+    authStore.reset()
+    await auth.checkAuth()
+    if(isAuthenticated.value) {
+        router.push({ name: 'home' })
+    }
+})
 </script>
 
 <style scoped>
