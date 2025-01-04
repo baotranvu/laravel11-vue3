@@ -14,6 +14,6 @@
                 <a href="#" class="nav-link px-2 text-muted">About</a>
             </li>
         </ul>
-        <p class="text-center text-muted">&copy; 2023 ToeDoeList</p>
+        <p class="text-center text-muted">&copy; 2023 ToDoList</p>
     </footer>
 </template>
