@@ -4,7 +4,6 @@ import useTaskCard from '@/composables/useTaskCard';
 import TaskCard from '@/components/Task/TaskCard.vue';
 import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
-import Navbar from '@/components/Navbar.vue';
 import ErrorPage from './ErrorPage.vue'
 import { useGlobalStore } from '@/stores/global';
 import { useTaskStore } from '@/stores/task';
@@ -46,7 +45,6 @@ const filteredTasks = computed(() => {
 </script>
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
-        <Navbar />
         <div class="container mt-4">
             <!-- Display loading state -->
             <div v-if="loading">

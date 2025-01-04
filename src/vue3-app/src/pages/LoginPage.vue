@@ -129,6 +129,7 @@ const handleSubmit = async () => {
 
 onMounted(async () => {
     globalStore.setError(null)
+    authStore.reset()
     await auth.checkAuth()
     if(isAuthenticated.value) {
         router.push({ name: 'home' })

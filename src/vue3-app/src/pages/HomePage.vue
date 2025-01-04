@@ -1,7 +1,6 @@
 
 <template>
   <div class="home-page">
-   <Navbar />
     <div class="hero-section">
       <div class="content">
         <h1>NATURE</h1>
