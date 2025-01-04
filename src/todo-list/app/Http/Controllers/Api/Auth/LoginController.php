@@ -23,7 +23,8 @@ class LoginController extends Controller
             return $this->unauthorized('Please verify your email', null);
         }
         $token = auth()->user()->createToken('api_token')->plainTextToken;
-        $cookie = cookie('api_token', $token, 60); 
+        //init cookie
+        $cookie = cookie('api_token', $token, 15, null, null, false, true);
         return $this->successResponse([
                 'token' => $token,
                 'user' => auth()->user()

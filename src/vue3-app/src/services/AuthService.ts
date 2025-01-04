@@ -2,9 +2,11 @@ import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import { api } from '@/http/api';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
     private readonly apiUrl = 'api/auth';
+    private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://api.todo-list.com:8080';
     private constructor() {}
 
     static getInstance(): AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
     }
 
     async login(credentials: LoginCredentials): Promise<User> {
+        await axios.get(`${this.baseUrl}/sanctum/csrf-cookie`);
         const response = await api.post(`${this.apiUrl}/login`, credentials);
         return response.data;
     }
@@ -42,7 +45,6 @@ export class AuthService {
         if (!token.value) {
             const tokenFromSession = sessionStorage.getItem('api_token') ?? null;
             if (!tokenFromSession) {
-                console.log('No token found');
                 return null;
             }
             token.value = tokenFromSession;
