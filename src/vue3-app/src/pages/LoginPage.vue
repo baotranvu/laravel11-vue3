@@ -60,11 +60,8 @@
 import { ref, reactive, computed } from 'vue'
 import { LoginCredentials, RegisterData } from '@/types/Auth';
 import { useAuth } from '@/composables/useAuth';
-import { useAuthStore } from '@/stores/auth';
 import { useGlobalStore } from '@/stores/global';
 import { storeToRefs } from 'pinia';
-const authStore = useAuthStore()
-const { isAuthenticated } = storeToRefs(authStore)
 const auth = useAuth()
 const globalStore = useGlobalStore()
 const { loading, error, hasError } = storeToRefs(globalStore)
