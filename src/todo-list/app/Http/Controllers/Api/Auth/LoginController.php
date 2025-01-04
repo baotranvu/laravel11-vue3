@@ -24,7 +24,7 @@ class LoginController extends Controller
         }
         $token = auth()->user()->createToken('api_token')->plainTextToken;
         //init cookie
-        $cookie = cookie('api_token', $token, 60); 
+        $cookie = cookie('api_token', $token, 15, null, null, false, true);
         return $this->successResponse([
                 'token' => $token,
                 'user' => auth()->user()
