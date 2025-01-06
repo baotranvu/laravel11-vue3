@@ -66,3 +66,6 @@ const handleCancel = (task: Task) => {
         </ul>
     </div>
 </template>
+<style scoped>
+@import '@/assets/task.css';
+</style>
