@@ -5,9 +5,11 @@ import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./stores/auth";
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
 const router = useRouter();
 const { checkAuth } = useAuth();
 const { isAuthenticated } = storeToRefs(useAuthStore());
+const currentRouteName = computed(() => String(router.currentRoute.value.name));
 router.beforeEach(async (to, _from, next) => {
   if (to.meta.requiresAuth) {
       await checkAuth();
