@@ -3,7 +3,7 @@ import ResourceService from "./ResourceService";
 import { Task, TaskPayload } from "@/types/Task";
 import api from "@/http/api";
 const API_VERSION = "v2";
-class TaskService extends ResourceService<Task, TaskPayload> {
+export class TaskService extends ResourceService<Task, TaskPayload> {
   constructor() {
     super(`api/${API_VERSION}/tasks`);
   }
@@ -11,5 +11,3 @@ class TaskService extends ResourceService<Task, TaskPayload> {
     return api.patch(`api/${API_VERSION}/tasks/${id}/complete`);
   }
 }
-
-export default new TaskService();

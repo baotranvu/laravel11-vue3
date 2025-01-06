@@ -1,9 +1,30 @@
 
-<script setup>
+<script setup lang="ts">
 import AppFooter from "@/components/AppFooter.vue";
+import { useAuth } from "@/composables/useAuth";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "./stores/auth";
+import { storeToRefs } from "pinia";
+const router = useRouter();
+const { checkAuth } = useAuth();
+const { isAuthenticated } = storeToRefs(useAuthStore());
+const currentRouteName = router.currentRoute.value.name as string;
+router.beforeEach(async (to, _from, next) => {
+  const listRoutesNeedAuth = ['home', 'tasks'];
+  if (listRoutesNeedAuth.includes(to.name as string)) {
+      await checkAuth();
+      if (isAuthenticated.value) {
+        next();
+      } else {
+        next({ name: 'login' });
+      }
+  } else {
+    next();
+  }
+});
 </script>
 <template>
-    <Navbar v-if="!['login', 'register'].includes($route.name)" />
+    <Navbar v-if="![ 'login', 'register' ].includes(currentRouteName)" />
     <div class="main-container">
         <router-view></router-view>
     </div>
@@ -18,7 +39,3 @@ import AppFooter from "@/components/AppFooter.vue";
         background-position: center;
     }
 </style>
-
-
-
-

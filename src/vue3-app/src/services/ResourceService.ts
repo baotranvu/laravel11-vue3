@@ -13,11 +13,25 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
 
   constructor(resource: string) {
     this.resource = resource;
-    const authStore = useAuthStore();
-    const token = authStore.getToken;
-    if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+
+  private static instanceMap: { [key: string]: ResourceService<any, any> } = {};
+
+  static getInstance<T extends Resource, CreateDTO = Omit<T, 'id'>>(
+    resource: string
+  ): ResourceService<T, CreateDTO> {
+    if (!this.instanceMap[resource]) {
+      this.instanceMap[resource] = new ResourceService<T, CreateDTO>(resource);
     }
+    console.log(this.instanceMap[resource]);
+    api.interceptors.request.use((config) => {
+      const authStore = useAuthStore();
+      if (authStore.token) {
+        config.headers.Authorization = `Bearer ${authStore.token}`;
+      }
+      return config;
+    });
+    return this.instanceMap[resource] as ResourceService<T, CreateDTO>;
   }
 
   async get(id: number): Promise<T> {
@@ -40,7 +54,7 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     return response.data;
   }
 
-  async updateAll(data: Partial<CreateDTO>): Promise<T[]> {
+  async bulkUpdate(data: Partial<CreateDTO>): Promise<T[]> {
     const response = await api.put(this.resource, data);
     return response.data;
   }

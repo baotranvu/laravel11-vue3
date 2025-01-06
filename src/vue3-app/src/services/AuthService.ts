@@ -1,6 +1,7 @@
 import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import { api } from '@/http/api';
 import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
 import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
@@ -22,8 +23,18 @@ export class AuthService {
 
     async logout(): Promise<void> {
         const authStore = useAuthStore();
-        await api.post(`${this.apiUrl}/logout`);
-        authStore.reset();
+        const { token } = storeToRefs(authStore);
+        const HTTP_NO_CONTENT = 204;
+        api.interceptors.request.use((config) => {
+            if (token.value) {
+              config.headers.Authorization = `Bearer ${token.value}`;
+            }
+            return config;
+        });
+        const response = await api.post(`${this.apiUrl}/logout`);
+        if (response.status === HTTP_NO_CONTENT) {
+            authStore.reset();
+        } 
     }
 
     async register(data: RegisterData): Promise<User> {
@@ -32,6 +43,14 @@ export class AuthService {
     }
 
     async getUser(): Promise<User | null> {
+        const authStore = useAuthStore();
+        const { token } = storeToRefs(authStore);
+        api.interceptors.request.use((config) => {
+            if (token.value) {
+              config.headers.Authorization = `Bearer ${token.value}`;
+            }
+            return config;
+        });
         const response = await api.get(`api/user`);
         return response.data;
     }

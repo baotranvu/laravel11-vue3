@@ -1,4 +1,4 @@
-import TaskService from '../services/TaskService';
+import { TaskService } from '../services/TaskService';
 import { debounce } from 'lodash-es';
 import { ApiResponse } from '@/types/ApiResponse';
 import { useTaskStore } from '@/stores/task';
@@ -9,12 +9,14 @@ import { Task } from '@/types/Task';
 export default function useTaskCard() {
     const tasksStore = useTaskStore();
     const globalStore = useGlobalStore();
+    const taskService = new TaskService;
     const { tasks } = storeToRefs(tasksStore);
-    const { loading, error } = storeToRefs(globalStore);
+    const { isLoading, error } = storeToRefs(globalStore);
     const retryCount = ref(0);
+    const DEFAULT_DEBOUNCE_DELAY = 300;
 
     const toggleTaskCompletion = async (task: Task): Promise<void> => {
-        if (loading.value) return;
+        if (isLoading.value) return;
 
         const originalState = task.is_completed;
         try {
@@ -22,7 +24,7 @@ export default function useTaskCard() {
             globalStore.setError(null);
             const taskToUpdate = tasks.value.find(t => t.id === task.id);
             if (taskToUpdate) taskToUpdate.is_completed = !taskToUpdate.is_completed;
-            await TaskService.changeTaskStatus(task.id);
+            await taskService.changeTaskStatus(task.id);
         } catch (err: any) {
             globalStore.setError(err);
             const taskToReset = tasks.value.find(t => t.id === task.id);
@@ -33,7 +35,7 @@ export default function useTaskCard() {
     };
 
     const handleDeleteTask = async (taskId: number): Promise<void> => {
-        if (loading.value) return;
+        if (isLoading.value) return;
 
         const deletedTaskIndex = tasks.value.findIndex(t => t.id === taskId);
         if (deletedTaskIndex === -1) return;
@@ -48,7 +50,7 @@ export default function useTaskCard() {
             globalStore.setLoading(true);
             globalStore.setError(null);
             tasks.value.splice(deletedTaskIndex, 1);
-            await TaskService.delete(taskId);
+            await taskService.delete(taskId);
         } catch (err: any) {
             globalStore.setError(err);
             tasks.value.splice(deletedTaskIndex, 0, deletedTask);
@@ -62,7 +64,7 @@ export default function useTaskCard() {
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
-            const response = await TaskService.all() as unknown as ApiResponse;
+            const response = await taskService.all() as unknown as ApiResponse;
             let tasks = response.data;
             tasks = tasks.sort((a: { created_at: any; }, b: { created_at: any; }) => 
                 new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
@@ -81,17 +83,17 @@ export default function useTaskCard() {
                 setTimeout(getTasks, Math.pow(2, retryCount.value) * 1000);
             }
         } finally {
-            loading.value = false;
+            globalStore.setLoading(false);
         }
     };
 
     const handleAddTask = async (name: string): Promise<void> => {
-        if (loading.value) return;
+        if (isLoading.value) return;
 
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
-            const response = await TaskService.create({ name }) as unknown as ApiResponse;
+            const response = await taskService.create({ name }) as unknown as ApiResponse;
             if (response.success) tasks.value.unshift(response.data);
         } catch (err: any) {
             globalStore.setError(err);
@@ -103,11 +105,11 @@ export default function useTaskCard() {
     const handleUpdateTask = async (taskId: number,data:Task): Promise<void> => {
         const taskToUpdate = tasks.value.find(t => t.id === taskId);
         const originalState = { ...taskToUpdate };
-        if (!taskToUpdate || loading.value) return;
+        if (!taskToUpdate || isLoading.value) return;
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
-            const response = await TaskService.update(taskId, data) as unknown as ApiResponse;
+            const response = await taskService.update(taskId, data) as unknown as ApiResponse;
             if (response.success) {
                 tasksStore.updateTask(response.data);
             }
@@ -123,9 +125,9 @@ export default function useTaskCard() {
         }
     };
 
-    const debounceHandleAddTask = debounce(handleAddTask, 300);
-    const debouncedToggleTaskCompletion = debounce(toggleTaskCompletion, 300);
-    const debouncedUpdateTask = debounce(handleUpdateTask, 300);
+    const debounceHandleAddTask = debounce(handleAddTask, DEFAULT_DEBOUNCE_DELAY);
+    const debouncedToggleTaskCompletion = debounce(toggleTaskCompletion, DEFAULT_DEBOUNCE_DELAY);
+    const debouncedUpdateTask = debounce(handleUpdateTask, DEFAULT_DEBOUNCE_DELAY);
 
     return {
         debouncedToggleTaskCompletion,
