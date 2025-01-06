@@ -12,6 +12,14 @@ export class AuthService {
         if (!AuthService.instance) {
             AuthService.instance = new AuthService();
         }
+        const authStore = useAuthStore();
+        const { token } = storeToRefs(authStore);
+        api.interceptors.request.use((config) => {
+            if (token.value) {
+              config.headers.Authorization = `Bearer ${token.value}`;
+            }
+            return config;
+        });
         return AuthService.instance;
     }
 
@@ -23,14 +31,7 @@ export class AuthService {
 
     async logout(): Promise<void> {
         const authStore = useAuthStore();
-        const { token } = storeToRefs(authStore);
         const HTTP_NO_CONTENT = 204;
-        api.interceptors.request.use((config) => {
-            if (token.value) {
-              config.headers.Authorization = `Bearer ${token.value}`;
-            }
-            return config;
-        });
         const response = await api.post(`${this.apiUrl}/logout`);
         if (response.status === HTTP_NO_CONTENT) {
             authStore.reset();
