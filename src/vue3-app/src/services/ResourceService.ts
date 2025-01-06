@@ -1,6 +1,6 @@
 // src/services/ResourceService.ts
-import api from "../http/api";
-import { useAuthStore } from "../stores/auth";
+import api from "@/http/api";
+import { useAuthStore } from "@/stores/auth";
 // Generic interface for any resource with an ID
 interface Resource {
   id: number;
@@ -20,10 +20,9 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
   static getInstance<T extends Resource, CreateDTO = Omit<T, 'id'>>(
     resource: string
   ): ResourceService<T, CreateDTO> {
-    if (!this.instanceMap[resource]) {
-      this.instanceMap[resource] = new ResourceService<T, CreateDTO>(resource);
+    if (!ResourceService.instanceMap[resource]) {
+      ResourceService.instanceMap[resource] = new ResourceService<T, CreateDTO>(resource);
     }
-    console.log(this.instanceMap[resource]);
     api.interceptors.request.use((config) => {
       const authStore = useAuthStore();
       if (authStore.token) {
@@ -31,7 +30,7 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
       }
       return config;
     });
-    return this.instanceMap[resource] as ResourceService<T, CreateDTO>;
+    return ResourceService.instanceMap[resource] as ResourceService<T, CreateDTO>;
   }
 
   async get(id: number): Promise<T> {

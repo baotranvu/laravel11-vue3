@@ -8,10 +8,8 @@ import { storeToRefs } from "pinia";
 const router = useRouter();
 const { checkAuth } = useAuth();
 const { isAuthenticated } = storeToRefs(useAuthStore());
-const currentRouteName = router.currentRoute.value.name as string;
 router.beforeEach(async (to, _from, next) => {
-  const listRoutesNeedAuth = ['home', 'tasks'];
-  if (listRoutesNeedAuth.includes(to.name as string)) {
+  if (to.meta.requiresAuth) {
       await checkAuth();
       if (isAuthenticated.value) {
         next();
