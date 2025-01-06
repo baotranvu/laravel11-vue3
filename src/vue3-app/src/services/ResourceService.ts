@@ -10,9 +10,10 @@ interface Resource {
 // Generic service class for any resource
 class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
   private readonly resource: string;
-
+  private isInterceptorInitialized = false;
   constructor(resource: string) {
     this.resource = resource;
+    this.getInterceptorsInstance();
   }
 
   private static instanceMap: { [key: string]: ResourceService<any, any> } = {};
@@ -23,14 +24,23 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     if (!ResourceService.instanceMap[resource]) {
       ResourceService.instanceMap[resource] = new ResourceService<T, CreateDTO>(resource);
     }
-    api.interceptors.request.use((config) => {
-      const authStore = useAuthStore();
-      if (authStore.token) {
-        config.headers.Authorization = `Bearer ${authStore.token}`;
-      }
-      return config;
-    });
+    if (!ResourceService.instanceMap[resource].isInterceptorInitialized) {
+      ResourceService.instanceMap[resource].getInterceptorsInstance();
+    }
     return ResourceService.instanceMap[resource] as ResourceService<T, CreateDTO>;
+  }
+
+  private getInterceptorsInstance() {
+    if (!this.isInterceptorInitialized) {
+      api.interceptors.request.use((config) => {
+        const authStore = useAuthStore();
+        if (authStore.token) {
+          config.headers.Authorization = `Bearer ${authStore.token}`;
+        }
+        return config;
+      });
+      this.isInterceptorInitialized = true;
+    }
   }
 
   async get(id: number): Promise<T> {

@@ -7,19 +7,25 @@ export class AuthService {
     private static instance: AuthService;
     private readonly apiUrl = 'api/auth';
     private readonly baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://api.todo-list.com:8080';
+    private isInterceptorInitialized = false;
     private constructor() {}
+    private getInterceptorsInstance() {
+        if (!this.isInterceptorInitialized) {
+            api.interceptors.request.use((config) => {
+                const authStore = useAuthStore();
+                if (authStore.token) {
+                    config.headers.Authorization = `Bearer ${authStore.token}`;
+                }
+                return config;
+            });
+            this.isInterceptorInitialized = true;
+        }
+    }
     static getInstance(): AuthService {
         if (!AuthService.instance) {
             AuthService.instance = new AuthService();
+            AuthService.instance.getInterceptorsInstance();
         }
-        const authStore = useAuthStore();
-        const { token } = storeToRefs(authStore);
-        api.interceptors.request.use((config) => {
-            if (token.value) {
-              config.headers.Authorization = `Bearer ${token.value}`;
-            }
-            return config;
-        });
         return AuthService.instance;
     }
 
@@ -44,14 +50,6 @@ export class AuthService {
     }
 
     async getUser(): Promise<User | null> {
-        const authStore = useAuthStore();
-        const { token } = storeToRefs(authStore);
-        api.interceptors.request.use((config) => {
-            if (token.value) {
-              config.headers.Authorization = `Bearer ${token.value}`;
-            }
-            return config;
-        });
         const response = await api.get(`api/user`);
         return response.data;
     }
