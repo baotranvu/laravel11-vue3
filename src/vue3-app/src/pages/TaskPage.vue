@@ -10,7 +10,7 @@ import { useTaskStore } from '@/stores/task';
 import { storeToRefs } from 'pinia';
 const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
-const { loading, hasError } = storeToRefs(globalStore);
+const { isLoading, hasError } = storeToRefs(globalStore);
 const { getUncompletedTasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
@@ -47,7 +47,7 @@ const filteredTasks = computed(() => {
     <main style="min-height: 50vh; margin-top: 2rem">
         <div class="container mt-4">
             <!-- Display loading state -->
-            <div v-if="loading">
+            <div v-if="isLoading">
                 <output class="d-flex justify-content-center items-center">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>

@@ -1,7 +1,6 @@
 // src/services/ResourceService.ts
-import api from "../http/api";
+import api from "@/http/api";
 import { useAuthStore } from "@/stores/auth";
-import { storeToRefs } from "pinia";
 // Generic interface for any resource with an ID
 interface Resource {
   id: number;
@@ -11,9 +10,37 @@ interface Resource {
 // Generic service class for any resource
 class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
   private readonly resource: string;
-
+  private isInterceptorInitialized = false;
   constructor(resource: string) {
     this.resource = resource;
+    this.getInterceptorsInstance();
+  }
+
+  private static instanceMap: { [key: string]: ResourceService<any, any> } = {};
+
+  static getInstance<T extends Resource, CreateDTO = Omit<T, 'id'>>(
+    resource: string
+  ): ResourceService<T, CreateDTO> {
+    if (!ResourceService.instanceMap[resource]) {
+      ResourceService.instanceMap[resource] = new ResourceService<T, CreateDTO>(resource);
+    }
+    if (!ResourceService.instanceMap[resource].isInterceptorInitialized) {
+      ResourceService.instanceMap[resource].getInterceptorsInstance();
+    }
+    return ResourceService.instanceMap[resource] as ResourceService<T, CreateDTO>;
+  }
+
+  private getInterceptorsInstance() {
+    if (!this.isInterceptorInitialized) {
+      api.interceptors.request.use((config) => {
+        const authStore = useAuthStore();
+        if (authStore.token) {
+          config.headers.Authorization = `Bearer ${authStore.token}`;
+        }
+        return config;
+      });
+      this.isInterceptorInitialized = true;
+    }
   }
 
   async get(id: number): Promise<T> {
@@ -36,7 +63,7 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     return response.data;
   }
 
-  async updateAll(data: Partial<CreateDTO>): Promise<T[]> {
+  async bulkUpdate(data: Partial<CreateDTO>): Promise<T[]> {
     const response = await api.put(this.resource, data);
     return response.data;
   }
@@ -45,19 +72,5 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     await api.delete(`${this.resource}/${id}`);
   }
 }
-
-api.interceptors.request.use((config) => {
-    const authstore = useAuthStore();
-    const { token } = storeToRefs(authstore);
-    // Check if a specific header exists
-    if (!config.headers['Authorization']) {
-        if (token.value) {
-            config.headers['Authorization'] = `Bearer ${token.value}`;
-        } else {
-            console.warn('Authorization header is missing!');
-        }
-    }
-    return config;
-});
 
 export default ResourceService;

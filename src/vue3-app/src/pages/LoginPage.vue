@@ -41,8 +41,8 @@
                     />
                 </div>
                 <div class="error" v-if="hasError">{{ error?.message }}</div>
-                <button type="submit" :disabled="loading">
-                    <span v-if="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                <button type="submit" :disabled="isLoading">
+                    <span v-if="isLoading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
                     {{ isLogin ? 'Login' : 'Register' }}
                 </button>
             </form>
@@ -65,11 +65,10 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 const router = useRouter()
 const authStore = useAuthStore()
-const { isAuthenticated } = storeToRefs(authStore)
 import { storeToRefs } from 'pinia';
 const auth = useAuth()
 const globalStore = useGlobalStore()
-const { loading, error, hasError } = storeToRefs(globalStore)
+const { isLoading, error, hasError } = storeToRefs(globalStore)
 const isEmailValid = computed(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(formData.email)
@@ -130,10 +129,6 @@ const handleSubmit = async () => {
 onMounted(async () => {
     globalStore.setError(null)
     authStore.reset()
-    await auth.checkAuth()
-    if(isAuthenticated.value) {
-        router.push({ name: 'home' })
-    }
 })
 </script>
 

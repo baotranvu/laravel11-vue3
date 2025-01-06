@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-// Component logic can be added here
 </script>
 
 <style scoped>

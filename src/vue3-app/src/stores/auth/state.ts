@@ -7,5 +7,5 @@ export interface AuthState {
 
 export const initialState: AuthState = {
     user: null,
-    token: null,
+    token: sessionStorage.getItem('api_token') || null,
 };

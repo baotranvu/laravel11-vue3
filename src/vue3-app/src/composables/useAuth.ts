@@ -19,7 +19,6 @@ export function useAuth() {
             if(response.success){
                 authStore.setUser(response.data?.user);
                 authStore.setToken(response.data?.token);
-                sessionStorage.setItem('api_token', response.data?.token);
             }else{
                 globalStore.setError({
                     message: response.message,
@@ -53,12 +52,13 @@ export function useAuth() {
             globalStore.setLoading(true);
             globalStore.setError(null);
             const response = await authService.getUser() as unknown as ApiResponse;
-            if(response?.success){
+            if(response.success && response.data.user){
                 authStore.setUser(response.data?.user);
+            }else{
+                authStore.reset();
             }
         } catch (err: any) {
-            sessionStorage.removeItem('api_token');
-            authStore.setUser(null);
+            authStore.reset();
         } finally {
             globalStore.setLoading(false);
         }
