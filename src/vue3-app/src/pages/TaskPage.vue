@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import useTaskCard from '@/composables/useTaskCard';
 import TaskCard from '@/components/Task/TaskCard.vue';
+import TaskCardSkeleton from '@/components/skeleton/TaskCardSkeleton.vue';
 import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
 import ErrorPage from './ErrorPage.vue'
@@ -30,12 +31,12 @@ const handleToggleCompletedTasks = (isCompleted: boolean) => {
     showCompletedTasks.value = isCompleted;
 };
 
-const handleEditTask = (taskId:number, newName:string) => {
+const handleEditTask = (taskId: number, newName: string) => {
     const taskToUpdate = tasks.value.find(task => task.id === taskId);
     if (taskToUpdate) {
         debouncedUpdateTask(taskId, { ...taskToUpdate, name: newName });
     }
-    
+
 };
 
 // Filter tasks based on completion status
@@ -46,16 +47,8 @@ const filteredTasks = computed(() => {
 <template>
     <main style="min-height: 50vh; margin-top: 2rem">
         <div class="container mt-4">
-            <!-- Display loading state -->
-            <div v-if="isLoading">
-                <output class="d-flex justify-content-center items-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </output>
-            </div>
             <!-- Display error state -->
-            <div v-else-if="hasError">
+            <div v-if="hasError">
                 <ErrorPage />
             </div>
             <!-- Task list -->
@@ -64,18 +57,29 @@ const filteredTasks = computed(() => {
                     <!-- Add new Task -->
                     <div>
                         <AddNewTaskInput @add-task="addTask" />
-                        <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks"/>
+                        <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks" />
                     </div>
-                    <!-- List of tasks -->
-                    <div class="mt-4" v-if="tasks && tasks.length > 0">
-                        <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task" @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask" @edit-task="handleEditTask" />
+                    <!-- Display loading state -->
+                    <div v-if="isLoading">
+                        <TaskCardSkeleton v-for="i in 5" :key="i" class="mt-4" />
                     </div>
-                    <!-- No tasks message -->
                     <div v-else>
-                        <p class="text-center">No tasks found. Add a new task above.</p>
+                        <!-- List of tasks -->
+                        <div class="mt-4" v-if="tasks && tasks.length > 0">
+                            <TaskCard v-for="task in filteredTasks" :key="task.id" :task="task"
+                                @toggle-task-completion="debouncedToggleTaskCompletion" @delete-task="handleDeleteTask"
+                                @edit-task="handleEditTask" />
+                        </div>
+                        <!-- No tasks message -->
+                        <div v-else>
+                            <p class="text-center">No tasks found. Add a new task above.</p>
+                        </div>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </main>
 </template>
+<style scoped>
+@import '@/assets/task.css';
+</style>

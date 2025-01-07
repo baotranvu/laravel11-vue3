@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import AppFooter from "@/components/AppFooter.vue";
 import { useAuth } from "@/composables/useAuth";
@@ -11,31 +10,29 @@ const { checkAuth } = useAuth();
 const { isAuthenticated } = storeToRefs(useAuthStore());
 const currentRouteName = computed(() => String(router.currentRoute.value.name));
 router.beforeEach(async (to, _from, next) => {
-  if (to.meta.requiresAuth) {
-      await checkAuth();
-      if (isAuthenticated.value) {
+    if (to.meta.requiresAuth) {
+        await checkAuth();
+        if (isAuthenticated.value) {
+            next();
+        } else {
+            next({ name: 'login' });
+        }
+    } else {
         next();
-      } else {
-        next({ name: 'login' });
-      }
-  } else {
-    next();
-  }
+    }
 });
 </script>
 <template>
-    <Navbar v-if="![ 'login', 'register' ].includes(currentRouteName)" />
+    <Navbar v-if="!['login', 'register'].includes(currentRouteName)" />
     <div class="main-container">
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+                <component :is="Component" />
+            </transition>
+        </router-view>
     </div>
     <AppFooter />
 </template>
 <style scoped>
-    .main-container {
-        width: 100%;
-        min-height: 100vh;
-        background-image: url('./assets/images/bg.jpg');
-        background-size: cover;
-        background-position: center;
-    }
+@import './assets/main.css';
 </style>

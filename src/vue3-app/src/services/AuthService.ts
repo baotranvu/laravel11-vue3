@@ -1,7 +1,6 @@
 import { User, LoginCredentials, RegisterData } from '@/types/Auth';
 import { api } from '@/http/api';
 import { useAuthStore } from '@/stores/auth';
-import { storeToRefs } from 'pinia';
 import axios from 'axios';
 export class AuthService {
     private static instance: AuthService;
