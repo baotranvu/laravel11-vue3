@@ -35,9 +35,9 @@ const handleCancel = (task: Task) => {
 </script>
 
 <template>
-    <div class="card mt-2" :class="{ 'bg-light': task.is_completed }" aria-label="Task card">
+    <div class="card mt-2 p-1" :class="{ 'bg-light': task.is_completed }" aria-label="Task card">
         <ul class="list-group list-group-flush">
-            <li class="list-group-item py-3">
+            <li class="list-group-item py-3 mx-2" style="cursor: pointer; user-select: none; height: 60px">
                 <div class="d-flex justify-content-start align-items-center" v-if="!isEdit" @dblclick="handleEdit(task)">
                     <input class="form-check-input mt-0" type="checkbox" role="switch"
                         aria-label="Task completion checkbox" :checked="task.is_completed"

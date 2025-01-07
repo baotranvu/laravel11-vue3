@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconTrash from '../icons/IconTrash.vue';
+import { VBtn } from 'vuetify/components';
 
 // Make props more generic to accept any item
 const props = defineProps<{
@@ -17,11 +17,10 @@ const handleDelete = () => {
 </script>
 
 <template>
-   <button 
-        class="btn btn-sm btn-circle btn-outline-danger" 
+   <v-btn 
+        icon="mdi-delete"
+        variant="outlined"
         @click="handleDelete"
-        aria-label="Delete item"
-    >
-       <IconTrash />
-    </button>
+        size="x-small"
+    />
 </template>

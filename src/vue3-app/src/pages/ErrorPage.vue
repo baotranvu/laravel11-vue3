@@ -6,13 +6,14 @@
           <p class="text-xl text-gray-700 mb-2">{{ message }}</p>
           <p class="text-gray-500"></p>
         </div>
-        <router-link
+        <v-btn
+          color="primary"
+          variant="outlined"
           to="/" 
           class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center mx-auto"
         >
-          <span class="mr-2">←</span>
           Back to Home
-        </router-link>
+        </v-btn>
       </div>
     </div>
 </template>

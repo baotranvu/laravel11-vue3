@@ -10,6 +10,10 @@ export const actions = {
         this.error = error;
     },
 
+    toggleMenu(this: GlobalState): void {
+        this.isShowMenu = !this.isShowMenu;
+    },
+
     reset(this: GlobalState): void {
         this.loading = false;
         this.error = null;
