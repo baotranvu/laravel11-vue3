@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { escapeSpecialCharacters } from '@/utils/InputHelper';
 interface AddTaskEventPayload {
     name: string;
 }
@@ -23,17 +24,6 @@ const rules = [
         return value.length >= 3 || 'Min 3 characters';
     },
 ];
-const escapeSpecialCharacters = (str: string): string => {
-    return str.replace(/[&<>'"]/g, (char) => {
-        return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;',
-        }[char] || '';
-    });
-};
 </script>
 <template>
     <v-text-field :rules="rules" hide-details="auto" label="Add new task. Press enter to save" v-model.trim="newTask" @keyup.enter="addTask" @keyup.escape="newTask = ''" prepend-icon="mdi-plus-box" />

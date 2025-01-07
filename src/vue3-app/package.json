@@ -21,7 +21,6 @@
     "vue-tsc": "^2.1.10"
   },
   "dependencies": {
-    "@types/lodash-es": "^4.17.12",
     "axios": "^1.7.9",
     "lodash-es": "^4.17.21",
     "pinia": "^2.3.0",
