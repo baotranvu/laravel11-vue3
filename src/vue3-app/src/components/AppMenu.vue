@@ -4,8 +4,9 @@
       <v-navigation-drawer
         v-model="isShowMenu"
         :rail="rail"
-        permanent
         @click="rail = false"
+        :temporary="$vuetify.display.mobile"
+        :mobile-breakpoint="960"
       >
         <v-divider></v-divider>
         <v-list>
