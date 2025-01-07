@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import AppFooter from "@/components/AppFooter.vue";
+
 import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./stores/auth";
 import { storeToRefs } from "pinia";
-import { computed } from "vue";
+
+
 const router = useRouter();
 const { checkAuth } = useAuth();
 const { isAuthenticated } = storeToRefs(useAuthStore());
-const currentRouteName = computed(() => String(router.currentRoute.value.name));
 router.beforeEach(async (to, _from, next) => {
-    if (to.meta.requiresAuth) {
-        await checkAuth();
-        if (isAuthenticated.value) {
-            next();
-        } else {
-            next({ name: 'login' });
-        }
+  if (to.meta.requiresAuth) {
+    await checkAuth();
+    if (isAuthenticated.value) {
+      next();
     } else {
-        next();
+      next({ name: 'login' });
     }
+  } else {
+    next();
+  }
 });
 </script>
 <template>
-    <Navbar v-if="!['login', 'register'].includes(currentRouteName)" />
-    <div class="main-container">
-        <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in">
-                <component :is="Component" />
-            </transition>
-        </router-view>
-    </div>
-    <AppFooter />
+    <router-view class="w-100 h-100 d-flex align-center justify-center p-4" v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+          <component :is="Component" />
+      </transition>
+    </router-view>
 </template>
 <style scoped>
-@import './assets/main.css';
+.main-bg {
+  background-image: url('@/assets/image/bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
 </style>

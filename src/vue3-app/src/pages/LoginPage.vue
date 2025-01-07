@@ -63,6 +63,7 @@ import { useAuth } from '@/composables/useAuth';
 import { useGlobalStore } from '@/stores/global';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { validateEmail } from '@/utils/InputHelper';
 const router = useRouter()
 const authStore = useAuthStore()
 import { storeToRefs } from 'pinia';
@@ -70,8 +71,7 @@ const auth = useAuth()
 const globalStore = useGlobalStore()
 const { isLoading, error, hasError } = storeToRefs(globalStore)
 const isEmailValid = computed(() => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(formData.email)
+    return validateEmail(formData.email)
 })
 const isLogin = ref(true)
 const formData = reactive({
@@ -133,5 +133,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@import '../assets/auth.css';
+@import '@/assets/auth.css';
 </style>
