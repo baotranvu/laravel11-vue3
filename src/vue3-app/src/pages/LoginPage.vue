@@ -2,50 +2,38 @@
     <div class="login-container">
         <div class="login-box">
             <h2>{{ isLogin ? 'Login' : 'Register' }}</h2>
-            <form @submit.prevent="handleSubmit">
-                <div v-if="!isLogin" class="form-group">
-                    <label for="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        v-model.trim="formData.name"
-                        required
-                    />
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        v-model.trim="formData.email"
-                        :class="{ 'invalid': !isEmailValid && formData.email }"
-                        required
-                    />
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        v-model.trim="formData.password"
-                        required
-                    />
-                </div>
-                <div v-if="!isLogin" class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        v-model.trim="formData.password_confirmation"
-                        required
-                    />
-                </div>
+            <v-form @submit.prevent="handleSubmit">
+                <v-text-field
+                    v-if="!isLogin"
+                    v-model="formData.name"
+                    label="Name"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    v-model="formData.email"
+                    label="Email"
+                    :error-messages="!isEmailValid && formData.email ? 'Invalid email' : ''"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    v-model="formData.password"
+                    label="Password"
+                    type="password"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    v-if="!isLogin"
+                    v-model="formData.password_confirmation"
+                    label="Confirm Password"
+                    type="password"
+                    required
+                ></v-text-field>
                 <div class="error" v-if="hasError">{{ error?.message }}</div>
-                <button type="submit" :disabled="isLoading">
-                    <span v-if="isLoading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                <v-btn type="submit" color="primary" :disabled="isLoading" class="d-flex align-items-center">
+                    <v-progress-circular v-if="isLoading" indeterminate size="20" width="2"></v-progress-circular>
                     {{ isLogin ? 'Login' : 'Register' }}
-                </button>
-            </form>
+                </v-btn>
+            </v-form>
             <p class="toggle-form">
                 {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
                 <a href="#" @click.prevent="toggleForm">

@@ -1,7 +1,7 @@
 <template>
     <v-footer class="bg-grey-lighten-1" :height="100">
         <v-row justify="center" no-gutters class="d-flex justify-content-center">
-            <v-btn v-for="link in links" :key="link" class="mx-2" color="white" rounded="xl" variant="text">
+            <v-btn v-for="link in links" :key="link" class="mx-2" size="small" rounded="xl" variant="text">
                 {{ link }}
             </v-btn>
             <v-col class="text-center mt-4" cols="12">

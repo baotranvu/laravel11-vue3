@@ -15,13 +15,7 @@ const addTask = (): void => {
 };
 const rules = [
     (value: string) => {
-        return !!value;
-    },
-    (value: string) => {
         return value.length <= 100 || 'Max 100 characters';
-    },
-    (value: string) => {
-        return value.length >= 3 || 'Min 3 characters';
     },
 ];
 </script>

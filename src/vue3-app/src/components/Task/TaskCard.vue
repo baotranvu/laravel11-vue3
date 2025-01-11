@@ -11,7 +11,9 @@ const toggleTaskCompletion = (task: Task) => {
     emit('toggle-task-completion', task)
 }
 const deleteTask = (taskId: number) => {
-    emit('delete-task', taskId)
+    if(taskId) {
+        emit('delete-task', taskId)
+    }
 }
 const editTask = (taskId: number, newName: string) => {
     if(!newName || !taskId) {

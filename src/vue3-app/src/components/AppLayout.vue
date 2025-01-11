@@ -3,7 +3,7 @@
     <AppNavbar/>
     <AppMenu>
       <template v-slot:content>
-        <v-main class="main-bg d-flex align-center justify-center" :min-height="'calc(100vh - 64px - 100px)'" :min-width="'300px'">
+        <v-main class="main-bg d-flex align-center justify-center main-mt-64" :min-height="'calc(100vh - 64px - 100px)'" :min-width="'300px'">
           <slot></slot>
         </v-main>
       </template>
@@ -17,3 +17,8 @@ import AppNavbar from './AppNavbar.vue';
 import AppMenu from './AppMenu.vue';
 import AppFooter from './AppFooter.vue';
 </script>
+<style scoped>
+.main-mt-64 {
+  margin-top: 64px;
+}
+</style>

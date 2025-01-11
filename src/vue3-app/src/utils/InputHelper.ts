@@ -21,15 +21,16 @@ export const escapeSpecialCharacters = (str: string): string => {
 + * @returns True if the email is valid, false otherwise
 + */
 export const validateEmail = (email: string): boolean => {
-    // eslint-disable-next-line
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    // eslint-disable-next-line no-control-regex  
+    const emailRegex = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;  
+    return email.length <= 254 && emailRegex.test(email);  
 };
+
 /**
-+ * Checks if the password is valid
-+ * @param password The password to check
-+ * @returns True if the password is valid, false otherwise
-+ */
+ * Checks if the password is valid
+ * @param password The password to check
+ * @returns True if the password is valid, false otherwise
+ */
 export const validatePassword = (password: string): boolean => {
     // eslint-disable-next-line
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
