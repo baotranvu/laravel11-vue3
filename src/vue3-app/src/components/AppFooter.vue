@@ -1,5 +1,5 @@
 <template>
-    <v-footer class="bg-grey-lighten-1" :height="100">
+    <v-footer class="bg-grey-lighten-1" :height="64">
         <v-row justify="center" no-gutters class="d-flex justify-content-center">
             <v-btn v-for="link in links" :key="link" class="mx-2" size="small" rounded="xl" variant="text">
                 {{ link }}

@@ -63,8 +63,18 @@ const closeDeleteModal = () => {
 
 const deleteTask = () => {
     if (deletedTaskId.value !== null) {
-        handleDeleteTask(deletedTaskId.value);
-        deleteModal.show = false;
+        try {
+            handleDeleteTask(deletedTaskId.value);
+            deletedTaskId.value = null;
+        } catch (e: any) {
+            const error = e?.response?.data ?? { status: 500, message: 'Something went wrong' };
+            globalStore.setError({
+                status: error.status,
+                message: error.message
+            });
+        } finally {
+            deleteModal.show = false;
+        }
     }
 };
 

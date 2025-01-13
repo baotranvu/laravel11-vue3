@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-      <div v-if="isShowMenu" style="width: 200px; height: 100%"></div>
+    <template v-slot:default>
       <div class="d-flex flex-column align-items-center justify-content-center w-100">
         <h1>Welcome to the Home Page</h1>
         <p>The current local time is: {{ currentDateTime }}</p>
@@ -8,6 +8,7 @@
           Your current location is: {{ currentLocation.latitude }}, {{ currentLocation.longitude }}
         </p>
       </div>
+    </template>
   </AppLayout>
 </template>
 
@@ -16,9 +17,7 @@
 import AppLayout from '@/components/AppLayout.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useGlobalStore } from '@/stores/global';
-import { storeToRefs } from 'pinia';
 const globalStore = useGlobalStore();
-const { isShowMenu } = storeToRefs(globalStore);
 const currentDateTime = ref<string | null>(new Date().toLocaleString());
 let timeIntervalId: number = 0;
 interface Location {

@@ -1,24 +1,27 @@
 <template>
-  <v-layout class="d-flex flex-column" width="100%">
-    <AppNavbar/>
-    <AppMenu>
-      <template v-slot:content>
-        <v-main class="main-bg d-flex align-center justify-center main-mt-64" :min-height="'calc(100vh - 64px - 100px)'" :min-width="'300px'">
-          <slot></slot>
-        </v-main>
-      </template>
-    </AppMenu>
-    <AppFooter/>
-  </v-layout>
+  <v-app>
+    <!-- Heder -->
+    <AppNavbar />
+
+     <!-- <drawer /> -->
+     <AppMenu v-if="isShowMenu" />
+
+    <!-- Content -->
+    <v-main>
+      <slot />
+    </v-main>
+
+    <!-- Footer -->
+    <AppFooter v-if="$vuetify.display.mdAndUp" />
+  </v-app>
 </template>
 
 <script setup lang="ts">
-import AppNavbar from './AppNavbar.vue';
 import AppMenu from './AppMenu.vue';
+import AppNavbar from './AppNavbar.vue';
 import AppFooter from './AppFooter.vue';
+import { useGlobalStore } from '@/stores/global';
+import { storeToRefs } from 'pinia';
+const globalStore = useGlobalStore()
+const { isShowMenu } = storeToRefs(globalStore)
 </script>
-<style scoped>
-.main-mt-64 {
-  margin-top: 64px;
-}
-</style>
