@@ -17,4 +17,28 @@ export const footerRoutes: Array<RouteRecordRaw> = [
             requiresAuth: false,
         },
     },
+    {
+        path: '/terms',
+        name: 'terms-of-service',
+        component: () => import('@/pages/Footer/TermsPage.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
+        path: '/faq',
+        name: 'faq',
+        component: () => import('@/pages/Footer/FaqPage.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
+    {
+        path: '/policy',
+        name: 'privacy-policy',
+        component: () => import('@/pages/Footer/PolicyPage.vue'),
+        meta: {
+            requiresAuth: false,
+        },
+    },
 ]

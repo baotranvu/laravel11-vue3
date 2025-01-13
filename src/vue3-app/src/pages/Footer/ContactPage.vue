@@ -1,17 +1,45 @@
 <template>
-    <Applayout>
+    <AppLayout>
         <template v-slot:default>
             <div class="d-flex flex-column align-items-center justify-content-center p-4">
                 <h1>Contact Us</h1>
-                <p>
-                    If you have any questions or feedback, please don't hesitate to
-                    contact us.
-                </p>
+                <v-form @submit.prevent="submitForm">
+                    <v-text-field label="Name" v-model="form.name" required></v-text-field>
+                    <v-text-field label="Email" v-model="form.email" required type="email"></v-text-field>
+                    <v-textarea label="Message" v-model="form.message" required></v-textarea>
+                    <v-btn type="submit" color="primary">Send Message</v-btn>
+                </v-form>
+                <v-alert v-if="successMessage" type="success">
+                    {{ successMessage }}
+                </v-alert>
             </div>
         </template>
-    </Applayout>
+    </AppLayout>
 </template>
 
 <script lang="ts" setup>
-import Applayout from '@/components/AppLayout.vue';
+import { ref } from 'vue';
+import AppLayout from '@/components/AppLayout.vue';
+import { VForm, VTextField, VTextarea, VBtn, VAlert } from 'vuetify/components';
+
+const form = ref({
+    name: '',
+    email: '',
+    message: ''
+});
+
+const successMessage = ref('');
+
+const submitForm = () => {
+    // Here you would typically send the form data to your backend
+    console.log('Form submitted:', form.value);
+
+    // Simulate a successful submission
+    successMessage.value = 'Thank you for your message! We will get back to you soon.';
+
+    // Reset the form
+    form.value.name = '';
+    form.value.email = '';
+    form.value.message = '';
+};
 </script>
