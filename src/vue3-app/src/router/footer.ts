@@ -6,7 +6,7 @@ export const footerRoutes: Array<RouteRecordRaw> = [
         name: 'about',
         component: () => import('@/pages/Footer/AboutPage.vue'),
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
     {
@@ -14,7 +14,7 @@ export const footerRoutes: Array<RouteRecordRaw> = [
         name: 'contact',
         component: () => import('@/pages/Footer/ContactPage.vue'),
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
     {
@@ -22,7 +22,7 @@ export const footerRoutes: Array<RouteRecordRaw> = [
         name: 'terms-of-service',
         component: () => import('@/pages/Footer/TermsPage.vue'),
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
     {
@@ -30,7 +30,7 @@ export const footerRoutes: Array<RouteRecordRaw> = [
         name: 'faq',
         component: () => import('@/pages/Footer/FaqPage.vue'),
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
     {
@@ -38,7 +38,7 @@ export const footerRoutes: Array<RouteRecordRaw> = [
         name: 'privacy-policy',
         component: () => import('@/pages/Footer/PolicyPage.vue'),
         meta: {
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
 ]
