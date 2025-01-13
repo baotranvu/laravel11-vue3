@@ -23,6 +23,7 @@ import { useModalStore } from '@/stores/modal';
 import { useRouter } from 'vue-router';
 import { VAppBar, VAppBarTitle, VAppBarNavIcon, VBtn, VIcon } from 'vuetify/components';
 import { useGlobalStore } from '@/stores/global';
+import { useAuthStore } from '@/stores/auth';
 import type { Modal } from '@/types/Modal';
 import { storeToRefs } from 'pinia';
 import { reactive } from 'vue';
@@ -30,11 +31,12 @@ const router = useRouter()
 const auth = useAuth()
 const globalStore = useGlobalStore()
 const { isShowMenu } = storeToRefs(globalStore)
+const authStore = useAuthStore()
 const modalStore = useModalStore()
 const logoutModal: Modal = reactive({
     id: 'logout',
     title: 'Logout',
-    message: 'Are you sure you want to logout?',
+    message: `Are you sure you want to logout ${authStore.getUserName}?`,
 });
 
 const openLogoutModal = () => {
