@@ -1,19 +1,21 @@
 <template>
-    <footer class="py-3 my-4">
-        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-            <li class="nav-item">
-                <a href="#" class="nav-link px-2 text-muted">Term</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link px-2 text-muted">Privacy</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link px-2 text-muted">FAQs</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link px-2 text-muted">About</a>
-            </li>
-        </ul>
-        <p class="text-center text-muted">&copy; 2023 ToDoList</p>
-    </footer>
+    <v-footer class="bg-grey-lighten-1" :height="64">
+        <v-row justify="center" no-gutters class="d-flex justify-content-center">
+            <v-btn v-for="link in links" :key="link" class="mx-2" size="small" rounded="xl" variant="text">
+                {{ link }}
+            </v-btn>
+            <v-col class="text-center mt-4" cols="12">
+                {{ new Date().getFullYear() }} — <strong>TodoList</strong>
+            </v-col>
+        </v-row>
+    </v-footer>
 </template>
+<script setup lang="ts">
+const links = [
+    'About Us',
+    'Team',
+    'Services',
+    'Blog',
+    'Contact Us',
+]
+</script>

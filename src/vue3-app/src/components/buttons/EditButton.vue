@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IconPencil from '../icons/IconPencil.vue';
+import { VBtn } from 'vuetify/components';
 const props = defineProps<{ itemId: number }>();
 const emit = defineEmits(['item-edit']);
 const handleClick = () => {
@@ -8,10 +8,10 @@ const handleClick = () => {
 </script>
 
 <template>
-    <button 
-        class="btn btn-sm btn-circle btn-outline-secondary me-1" 
+    <v-btn 
+        icon="mdi-pencil"
+        variant="outlined"
         @click="handleClick"
-    >
-        <IconPencil />
-    </button>
+        size="x-small"
+    />
 </template>
