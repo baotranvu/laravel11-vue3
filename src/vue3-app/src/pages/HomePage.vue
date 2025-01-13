@@ -33,7 +33,7 @@ import { useRouter } from 'vue-router';
 const currentTime = ref('');
 const currentDate = ref('');
 const router = useRouter();
-let intervalId: number;
+let intervalId: ReturnType<typeof setInterval>;
 
 const updateTime = () => {
   const now = new Date();
