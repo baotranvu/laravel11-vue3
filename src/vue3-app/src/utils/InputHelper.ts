@@ -31,8 +31,40 @@ export const validateEmail = (email: string): boolean => {
  * @param password The password to check
  * @returns True if the password is valid, false otherwise
  */
-export const validatePassword = (password: string): boolean => {
-    // eslint-disable-next-line
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
+const PASSWORD_REQUIREMENTS = {
+    MIN_LENGTH: 8,
+    REQUIRE_UPPERCASE: true,
+    REQUIRE_LOWERCASE: true,
+    REQUIRE_NUMBERS: true,
+    REQUIRE_SPECIAL: true
+};
+
+interface PasswordValidationResult {
+    isValid: boolean;
+    errors: string[];
+}
+
+export const validatePassword = (password: string): PasswordValidationResult => {
+    const errors: string[] = [];
+    
+    if (password.length < PASSWORD_REQUIREMENTS.MIN_LENGTH) {
+        errors.push(`Password must be at least ${PASSWORD_REQUIREMENTS.MIN_LENGTH} characters long`);
+    }
+    if (PASSWORD_REQUIREMENTS.REQUIRE_UPPERCASE && !/[A-Z]/.test(password)) {
+        errors.push('Password must contain at least one uppercase letter');
+    }
+    if (PASSWORD_REQUIREMENTS.REQUIRE_LOWERCASE && !/[a-z]/.test(password)) {
+        errors.push('Password must contain at least one lowercase letter');
+    }
+    if (PASSWORD_REQUIREMENTS.REQUIRE_NUMBERS && !/\d/.test(password)) {
+        errors.push('Password must contain at least one number');
+    }
+    if (PASSWORD_REQUIREMENTS.REQUIRE_SPECIAL && !/[@$!%*?&]/.test(password)) {
+        errors.push('Password must contain at least one special character (@$!%*?&)');
+    }
+    
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
 };
