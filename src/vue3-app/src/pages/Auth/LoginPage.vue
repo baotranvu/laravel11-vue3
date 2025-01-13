@@ -40,6 +40,9 @@
                     {{ isLogin ? 'Register' : 'Login' }}
                 </a>
             </p>
+            <v-alert v-if="message" type="success">
+                {{ message }}
+            </v-alert>
         </div>
     </div>
 </template>
@@ -69,6 +72,8 @@ const formData = reactive({
     password_confirmation: ''
 })
 
+const message = ref('')
+
 const toggleForm = () => {
     isLogin.value = !isLogin.value
     globalStore.setError(null)
@@ -80,12 +85,17 @@ const resetFormData = () => {
     formData.email = ''
     formData.password = ''
     formData.password_confirmation = ''
+    if (message.value) {
+        setTimeout(() => {
+            message.value = ''
+        }, 5000)
+    }
 }
 
 const handleSubmit = async () => {
     globalStore.setError(null)
     if (!isEmailValid.value) {
-       globalStore.setError({ status: 400, message: 'Invalid email' })
+        globalStore.setError({ status: 400, message: 'Invalid email' })
         return
     }
     
@@ -103,7 +113,7 @@ const handleSubmit = async () => {
         } else {
            await auth.register(formData as RegisterData)
            if(!hasError.value) {
-                alert('Registration successful')
+                message.value = 'Registration successful'
                 toggleForm()
            }
         }

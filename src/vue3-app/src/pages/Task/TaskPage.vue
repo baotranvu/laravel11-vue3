@@ -7,13 +7,16 @@ import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
 import ErrorPage from '@/pages/ErrorPage.vue'
 import AppLayout from '@/components/AppLayout.vue';
+import AppModal from '@/components/AppModal.vue';
 import { useGlobalStore } from '@/stores/global';
 import { useTaskStore } from '@/stores/task';
+import { useModalStore } from '@/stores/modal';
 import { storeToRefs } from 'pinia';
 import { VVirtualScroll } from 'vuetify/components';
 import type { Modal } from '@/types/Modal';
 const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
+const modalStore = useModalStore();
 const { isLoading, hasError } = storeToRefs(globalStore);
 const { getUncompletedTasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
@@ -43,22 +46,18 @@ const handleEditTask = (taskId: number, newName: string) => {
 
 };
 
-const deleteModal : Modal = reactive({
+let deleteModal : Modal = reactive({
     id: 'delete-task-modal',
-    show: false,
     title: 'Delete task',
     message: 'Are you sure you want to delete this task?',
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
 });
-
 const openDeleteModal = (taskId: number) => {
-    deleteModal.show = true;
     deletedTaskId.value = taskId;
+    modalStore.openModal(deleteModal);
 };
 
 const closeDeleteModal = () => {
-    deleteModal.show = false;
+    modalStore.closeModal(deleteModal.id);
 };
 
 const deleteTask = () => {
@@ -73,7 +72,7 @@ const deleteTask = () => {
                 message: error.message
             });
         } finally {
-            deleteModal.show = false;
+            closeDeleteModal();
         }
     }
 };
@@ -108,7 +107,7 @@ const filteredTasks = computed(() => {
                             :height="'calc(100vh - 400px)'">
                             <template #default="{ item }">
                                 <TaskCard :task="item" @toggle-task-completion="debouncedToggleTaskCompletion"
-                                    @delete-task="openDeleteModal" @edit-task="handleEditTask" />
+                                    @delete-task="(taskId: number) => openDeleteModal(taskId)" @edit-task="handleEditTask" />
                             </template>
                         </v-virtual-scroll>
                         <!-- No tasks message -->
@@ -119,25 +118,7 @@ const filteredTasks = computed(() => {
                 </div>
             </div>
         </div>
-        <v-dialog v-model="deleteModal.show" width="400" max-width="600" transition="dialog-top-transition"
-             variant="flat">
-            <v-card rounded="lg">
-                <v-card-title class="d-flex justify-content-between align-items-center">
-                    <div class="text-h5 text-medium-emphasis ps-2">
-                        {{ deleteModal.title }}
-                    </div>
-                    <v-btn icon="mdi-close" variant="text" @click="closeDeleteModal"></v-btn>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text>{{ deleteModal.message }}</v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn variant="outlined" color="primary" @click="deleteTask">Confirm</v-btn>
-                    <v-btn variant="outlined" color="danger" @click="closeDeleteModal">Cancel</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <AppModal :handleConfirm="deleteTask" :handleCancel="closeDeleteModal" :id="deleteModal.id" :title="deleteModal.title" :message="deleteModal.message" />
     </AppLayout>
 </template>
 <style scoped>
