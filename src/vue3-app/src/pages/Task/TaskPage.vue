@@ -5,7 +5,7 @@ import TaskCard from '@/components/Task/TaskCard.vue';
 import TaskCardSkeleton from '@/components/skeleton/TaskCardSkeleton.vue';
 import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
-import ErrorPage from './ErrorPage.vue'
+import ErrorPage from '@/pages/ErrorPage.vue'
 import AppLayout from '@/components/AppLayout.vue';
 import { useGlobalStore } from '@/stores/global';
 import { useTaskStore } from '@/stores/task';

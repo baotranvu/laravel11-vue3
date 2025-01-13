@@ -1,5 +1,5 @@
 import { RouteRecordRaw } from 'vue-router'
-
+import { footerRoutes } from './footer';
 export const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -12,21 +12,17 @@ export const routes: Array<RouteRecordRaw> = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('@/pages/LoginPage.vue'),
-    },
-    {
-        path: '/register',
-        name: 'register',
-        component: () => import('@/pages/LoginPage.vue'),
+        component: () => import('@/pages/Auth/LoginPage.vue'),
     },
     {
         path: '/tasks',
         name: 'tasks',
-        component: () => import('@/pages/TaskPage.vue'),
+        component: () => import('@/pages/Task/TaskPage.vue'),
         meta: {
             requiresAuth: true,
         },
     },
+    ...footerRoutes,
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
