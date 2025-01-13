@@ -33,7 +33,7 @@
                     new Privacy Policy on this page.</p>
 
                 <h2>Contact Us</h2>
-                <p>If you have any questions about this Privacy Policy, please contact us at support@example.com.</p>
+                <p>If you have any questions about this Privacy Policy, please contact us at {{ supportEmail }}.</p>
             </div>
         </template>
     </AppLayout>
@@ -41,4 +41,5 @@
 
 <script lang="ts" setup>
 import AppLayout from '@/components/AppLayout.vue';
+const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL || 'support@example.com';  
 </script>

@@ -1,18 +1,26 @@
 <template>
     <AppLayout>
       <template v-slot:default>
-        <div class="p-4">
-          <h1>Terms and Conditions</h1>
+        <div class="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto">
+          <h1 class="text-2xl md:text-3xl font-bold mb-6">Terms and Conditions</h1>
           <p>Welcome to our todo list application. By using our app, you agree to the following terms and conditions:</p>
   
-          <v-card v-for="(term, index) in terms" :key="index" class="mb-4">
-            <v-card-title>{{ term.title }}</v-card-title>
-            <v-card-text>{{ term.description }}</v-card-text>
-          </v-card>
+          <section aria-label="Terms and Conditions List">
+            <v-card 
+              v-for="(term, index) in terms" 
+              :key="index" 
+              class="mb-4"
+              role="article"
+              :aria-labelledby="`term-${index}-title`"
+            >
+              <v-card-title :id="`term-${index}-title`">{{ term.title }}</v-card-title>
+              <v-card-text>{{ term.description }}</v-card-text>
+            </v-card>
+          </section>
         </div>
       </template>
     </AppLayout>
-  </template>
+</template>
   
   <script lang="ts" setup>
   import AppLayout from '@/components/AppLayout.vue';
