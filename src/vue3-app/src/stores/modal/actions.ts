@@ -10,14 +10,14 @@ export const actions = {
     clearModals(this: ModalState) {
         this.modals = [];
     },
-    confirm(this: ModalState, id: string, params?: any) {
+    confirm<T = unknown>(this: ModalState, id: string, params?: T) {
         const modal = this.modals.find(modal => modal.id === id);
-        if (modal && modal.onConfirm) modal.onConfirm(params || modal.customData);
+        modal?.onConfirm?.(params ?? modal?.customData);
         this.closeModal(id);
     },
-    cancel(this: ModalState, id: string, params?: any) {
+    cancel<T = unknown>(this: ModalState, id: string, params?: T) {
         const modal = this.modals.find(modal => modal.id === id);
-        if (modal && modal.onCancel) modal.onCancel(params || modal.customData);
+        modal?.onCancel?.(params ?? modal?.customData);
         this.closeModal(id);
     },
 } as const;
