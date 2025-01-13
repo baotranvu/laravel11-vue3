@@ -1,9 +1,8 @@
-export interface Modal {
+export interface Modal<T = unknown> {
     id: string;
-    activator?: string;
-    show: boolean;
     title: string;
     message: string;
-    confirmText: string;
-    cancelText: string;
+    customData?: T;
+    onConfirm?: (params?: T) => void;
+    onCancel?: (params?: T) => void;
 }
