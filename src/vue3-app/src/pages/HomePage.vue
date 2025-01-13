@@ -1,59 +1,60 @@
 <template>
   <AppLayout>
     <template v-slot:default>
-      <div class="d-flex flex-column align-items-center justify-content-center w-100">
-        <h1>Welcome to the Home Page</h1>
-        <p>The current local time is: {{ currentDateTime }}</p>
-        <p v-if="currentLocation.latitude && currentLocation.longitude">
-          Your current location is: {{ currentLocation.latitude }}, {{ currentLocation.longitude }}
-        </p>
-      </div>
+      <v-container class="d-flex flex-column align-items-center">
+        <v-row>
+          <v-col>
+            <h1>Welcome to Your Todo List App!</h1>
+            <p>Your mission to stay organized starts here.</p>
+            <v-btn color="primary" @click="startTask">Get Started</v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <h2>Current Date and Time</h2>
+            <v-card>
+              <v-card-title>
+                <v-icon left>mdi-calendar</v-icon>
+                {{ currentDate }} - {{ currentTime }}
+              </v-card-title>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
     </template>
   </AppLayout>
 </template>
 
-<script setup lang="ts">
-// No additional components needed
+<script lang="ts" setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import AppLayout from '@/components/AppLayout.vue';
-import { onMounted, onUnmounted, ref } from 'vue';
-import { useGlobalStore } from '@/stores/global';
-const globalStore = useGlobalStore();
-const currentDateTime = ref<string | null>(new Date().toLocaleString());
-let timeIntervalId: number = 0;
-interface Location {
-  latitude: number | null;
-  longitude: number | null;
-}
-const currentLocation = ref<Location>({ latitude: null, longitude: null });
+import { useRouter } from 'vue-router';
+
+const currentTime = ref('');
+const currentDate = ref('');
+const router = useRouter();
+let intervalId: number;
+
+const updateTime = () => {
+  const now = new Date();
+  currentTime.value = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  currentDate.value = now.toLocaleDateString(); // Update the date
+};
+
+const startTask = async () => {
+  try {
+    await router.push({ name: 'tasks' });
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 onMounted(() => {
-  globalStore.setError(null);
-  timeIntervalId = (setInterval(() => {
-    currentDateTime.value = new Date().toLocaleString();
-  }, 1000) as unknown) as number;
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      currentLocation.value = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      };
-    },
-    (error) => {
-      const errorMessage = error.message;
-      globalStore.setError({ status: error.code || 500, message: errorMessage });
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 30000,
-      timeout: 27000,
-    }
-  );
+  updateTime();
+  intervalId = setInterval(updateTime, 1000); // Update time every second
 });
 
 onUnmounted(() => {
-  if (timeIntervalId) {
-    clearInterval(timeIntervalId);
-  }
+  clearInterval(intervalId); // Clear the interval when the component is unmounted
 });
 </script>
