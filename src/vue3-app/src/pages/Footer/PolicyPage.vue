@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
         <template v-slot:default>
-            <div class="d-flex flex-column align-items-center justify-content-center p-4">
+            <div class="p-4">
                 <h1>Privacy Policy</h1>
                 <p>Your privacy is important to us. This policy outlines how we collect, use, and protect your
                     information.</p>

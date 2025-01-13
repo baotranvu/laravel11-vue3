@@ -1,20 +1,18 @@
 <template>
   <AppLayout>
     <template v-slot:default>
-      <div class="d-flex flex-column align-items-center justify-content-center p-4">
+      <div class="p-4">
         <h1>Frequently Asked Questions</h1>
-        <v-accordion>
-          <v-accordion-item v-for="(faq, index) in faqs" :key="index">
-            <template v-slot:header>
-              <v-row align="center">
-                <v-col>{{ faq.question }}</v-col>
-              </v-row>
-            </template>
-            <v-row>
-              <v-col>{{ faq.answer }}</v-col>
-            </v-row>
-          </v-accordion-item>
-        </v-accordion>
+        <v-container>
+          <v-row>
+            <v-col v-for="(faq, index) in faqs" :key="index" cols="12" md="6">
+              <v-card>
+                <v-card-title>{{ faq.question }}</v-card-title>
+                <v-card-text>{{ faq.answer }}</v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
       </div>
     </template>
   </AppLayout>
