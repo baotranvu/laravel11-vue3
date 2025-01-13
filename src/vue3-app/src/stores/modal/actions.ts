@@ -20,4 +20,7 @@ export const actions = {
         modal?.onCancel?.(params ?? modal?.customData);
         this.closeModal(id);
     },
+    getModalById(this: ModalState, id: string): Modal | undefined {
+        return this.modals.find(modal => modal.id === id);
+    },
 } as const;
