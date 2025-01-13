@@ -21,5 +21,7 @@ const handleDelete = () => {
         variant="outlined"
         @click="handleDelete"
         size="x-small"
+        :title="'Delete item'"
+        aria-label="Delete item"
     />
 </template>
