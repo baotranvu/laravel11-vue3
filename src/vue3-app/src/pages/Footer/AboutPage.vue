@@ -2,7 +2,6 @@
   <AppLayout>
     <v-container class="d-flex flex-column align-items-center">
       <h1 class="text-center">About Us</h1>
-      <v-img src="/src/assets/images/about.webp" alt="About Us" max-width="400" :width="$vuetify.display.lgAndUp ? 400 : 200" class="mb-4"/>
       <v-col cols="12" v-if="$vuetify.display.lgAndUp">
         <v-card>
           <v-tabs v-model="tab" bg-color="primary" vertical>
@@ -24,6 +23,7 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-col>
+      <v-img src="/src/assets/images/about.webp" alt="About Us" max-width="400" :width="$vuetify.display.lgAndUp ? 400 : 200" class="mb-4"/>
     </v-container>
   </AppLayout>
 </template>

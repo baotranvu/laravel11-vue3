@@ -5,11 +5,11 @@
         <h1 class="text-2xl md:text-3xl font-bold mb-6">Terms and Conditions</h1>
         <p>Welcome to our todo list application. By using our app, you agree to the following terms and conditions:</p>
         <v-row>
-          <v-col cols="4" v-if="$vuetify.display.lgAndUp">
+          <v-col cols="5" v-if="$vuetify.display.lgAndUp">
             <v-img src="/src/assets/images/terms.webp" cover alt="Terms and Conditions" max-width="400" :width="400"
               class="mb-4" />
           </v-col>
-          <v-col cols="8">
+          <v-col cols="7">
             <section aria-label="Terms and Conditions List">
               <v-expansion-panels>
                 <v-expansion-panel v-for="(item, index) in terms" :key="index" :title="item.title"
