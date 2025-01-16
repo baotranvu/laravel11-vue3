@@ -16,6 +16,7 @@ interface FooterLink {
     routeName: string;
 }
 const links: FooterLink[] = [
+    { title: 'Home', routeName: 'home' },
     { title: 'About', routeName: 'about' },
     { title: 'Contact', routeName: 'contact' },
     { title: 'FAQ', routeName: 'faq' },

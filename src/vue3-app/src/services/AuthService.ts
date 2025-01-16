@@ -3,13 +3,13 @@ import { api } from '@/http/api';
 import { useAuthStore } from '@/stores/auth';
 export class AuthService {
     private static instance: AuthService;
-    private readonly apiUrl = 'api/auth';
+    private readonly apiUrl = '/auth';
     private isInterceptorInitialized = false;
     private constructor() {}
     private getInterceptorsInstance() {
         if (!this.isInterceptorInitialized) {
+            const authStore = useAuthStore();
             api.interceptors.request.use((config) => {
-                const authStore = useAuthStore();
                 if (authStore.token) {
                     config.headers.Authorization = `Bearer ${authStore.token}`;
                 }
@@ -46,7 +46,7 @@ export class AuthService {
     }
 
     async getUser(): Promise<User | null> {
-        const response = await api.get(`api/user`);
+        const response = await api.get(`/user`);
         return response.data;
     }
 }

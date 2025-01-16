@@ -1,10 +1,10 @@
 <template>
   <v-app>
     <!-- Heder -->
-    <AppNavbar />
+    <AppNavbar v-if="$vuetify.display.mdAndUp && isAuthenticated" />
 
      <!-- <drawer /> -->
-     <AppMenu v-if="isShowMenu" />
+     <AppMenu v-if="isAuthenticated" />
 
     <!-- Content -->
     <v-main>
@@ -20,8 +20,8 @@
 import AppMenu from './AppMenu.vue';
 import AppNavbar from './AppNavbar.vue';
 import AppFooter from './AppFooter.vue';
-import { useGlobalStore } from '@/stores/global';
 import { storeToRefs } from 'pinia';
-const globalStore = useGlobalStore()
-const { isShowMenu } = storeToRefs(globalStore)
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
 </script>

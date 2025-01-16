@@ -4,16 +4,23 @@ import { ApiResponse } from '@/types/ApiResponse';
 import { useTaskStore } from '@/stores/task';
 import { useGlobalStore } from '@/stores/global';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
 import { Task } from '@/types/Task';
+import { ErrorType } from '@/types/ErrorType';
+import { ref } from 'vue';
 export default function useTaskCard() {
     const tasksStore = useTaskStore();
     const globalStore = useGlobalStore();
     const taskService = new TaskService;
     const { tasks } = storeToRefs(tasksStore);
-    const { isLoading, error } = storeToRefs(globalStore);
-    const retryCount = ref(0);
+    const { isLoading } = storeToRefs(globalStore);
     const DEFAULT_DEBOUNCE_DELAY = 300;
+
+    const retryCount = ref(0);
+
+    const unknownError: ErrorType = {
+        message: 'An unknown error occurred',
+        status: 500
+    };
 
     const toggleTaskCompletion = async (task: Task): Promise<void> => {
         if (isLoading.value) return;
@@ -52,7 +59,7 @@ export default function useTaskCard() {
             tasks.value.splice(deletedTaskIndex, 1);
             await taskService.delete(taskId);
         } catch (err: any) {
-            globalStore.setError(err);
+            globalStore.setError(unknownError);
             tasks.value.splice(deletedTaskIndex, 0, deletedTask);
         } finally {
             globalStore.setLoading(false);
@@ -65,19 +72,26 @@ export default function useTaskCard() {
             globalStore.setLoading(true);
             globalStore.setError(null);
             const response = await taskService.all() as unknown as ApiResponse;
-            let tasks = response.data;
+            if(!response.success){
+                const error: ErrorType = {
+                    message: response.message,
+                    status: response.status
+                };
+                globalStore.setError(error);
+                throw error;
+            }
+            let tasks = response.data ?? [];
             tasks = tasks.sort((a: { created_at: any; }, b: { created_at: any; }) => 
                 new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
             );
             tasksStore.setTasks(tasks);
-            error.value = null;
+            globalStore.setError(null);
             retryCount.value = 0;
         } catch (err: any) {
             globalStore.setError({
-                status: err.status,
-                message: err.response.data.message
+                message: err.message ?? 'An unknown error occurred',
+                status: err.status
             });
-
             if (retryCount.value < 3) {
                 retryCount.value++;
                 setTimeout(getTasks, Math.pow(2, retryCount.value) * 1000);
@@ -96,7 +110,7 @@ export default function useTaskCard() {
             const response = await taskService.create({ name }) as unknown as ApiResponse;
             if (response.success) tasks.value.unshift(response.data);
         } catch (err: any) {
-            globalStore.setError(err);
+            globalStore.setError(unknownError);
         } finally {
             globalStore.setLoading(false);
         }
@@ -114,7 +128,7 @@ export default function useTaskCard() {
                 tasksStore.updateTask(response.data);
             }
         } catch (err: any) {
-            globalStore.setError(err);
+            globalStore.setError(unknownError);
             // Reset the task to its original state
             const taskToReset = tasks.value.find(t => t.id === taskId);
             if (taskToReset) {

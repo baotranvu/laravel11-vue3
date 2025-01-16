@@ -1,5 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
 import { footerRoutes } from './footer';
+import { errorRoutes } from './errors';
 export const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -23,9 +24,10 @@ export const routes: Array<RouteRecordRaw> = [
         },
     },
     ...footerRoutes,
+    ...errorRoutes,
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
-        component: () => import('@/pages/ErrorPage.vue'),
+        component: () => import('@/pages/Error/NotFoundPage.vue'),
     },
 ];

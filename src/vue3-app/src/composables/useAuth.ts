@@ -4,12 +4,15 @@ import { LoginCredentials, RegisterData } from '@/types/Auth';
 import { ApiResponse } from '@/types/ApiResponse';
 import { useAuthStore } from '@/stores/auth';
 import { useGlobalStore } from '@/stores/global';
-
+import type { ErrorType } from '@/types/ErrorType';
+import { redirectToErrorPage } from '@/utils/AppHelper';
+import { useRouter } from 'vue-router';
 export function useAuth() {
     const authService = AuthService.getInstance();
     const authStore = useAuthStore();
     const globalStore = useGlobalStore();
     const { user } = storeToRefs(authStore);
+    const router = useRouter();
 
     async function login(credentials: LoginCredentials) {
         try {
@@ -26,7 +29,11 @@ export function useAuth() {
                 });
             }
         } catch (err: any) {
-            globalStore.setError(err);
+            const error: ErrorType = {
+                message: err.message ?? 'An unknown error occurred',
+                status: err.status
+            };
+            globalStore.setError(error);
             throw err;
         } finally {
             globalStore.setLoading(false);
@@ -37,7 +44,6 @@ export function useAuth() {
         try {
             await authService.logout();
         } catch (err: any) {
-            globalStore.setError(err);
             throw err;
         } finally {
             authStore.reset();
@@ -56,9 +62,19 @@ export function useAuth() {
                 authStore.setUser(response.data?.user);
             }else{
                 authStore.reset();
+                redirectToErrorPage(router, {
+                    message: response.message,
+                    status: response.status
+                });
             }
         } catch (err: any) {
-            authStore.reset();
+            const error: ErrorType = {
+                message: err.message ?? 'An unknown error occurred',
+                status: err.status
+            };
+            globalStore.setError(error);
+            redirectToErrorPage(router, error);
+            throw err;
         } finally {
             globalStore.setLoading(false);
         }
@@ -71,7 +87,11 @@ export function useAuth() {
             const response = await authService.register(data) as unknown as ApiResponse;
             authStore.setUser(response.data?.user);
         } catch (err: any) {
-            globalStore.setError(err);
+            const error: ErrorType = {
+                message: err.message ?? 'An unknown error occurred',
+                status: err.status
+            };
+            globalStore.setError(error);
             throw err;
         } finally {
             globalStore.setLoading(false);
