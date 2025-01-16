@@ -29,10 +29,3 @@ router.beforeEach(async (to, _from, next) => {
       </transition>
     </router-view>
 </template>
-<style scoped>
-.main-bg {
-  background-image: url('@/assets/image/bg.jpg');
-  background-size: cover;
-  background-position: center;
-}
-</style>
