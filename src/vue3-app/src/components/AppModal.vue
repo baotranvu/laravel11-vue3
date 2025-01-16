@@ -1,14 +1,24 @@
 <!-- components/Modal.vue -->
 <template>
-    <v-dialog v-model="isVisible" max-width="500px">
+    <v-dialog 
+        v-model="isVisible" 
+        max-width="500px"
+        @click:outside="handleCancel"
+        @keydown.esc="handleCancel"
+        @keydown.enter="handleConfirm"
+        role="dialog"
+        :aria-labelledby="id + '-title'"
+        :aria-describedby="id + '-description'"
+        aria-modal="true"
+    >
         <v-card>
             <v-card-title>
-                <span class="headline">{{ title }}</span>
+                <span :id="id + '-title'" class="headline">{{ title }}</span>
             </v-card-title>
-            <v-card-subtitle>{{ message }}</v-card-subtitle>
+            <v-card-subtitle :id="id + '-description'">{{ message }}</v-card-subtitle>
             <v-card-actions>
-                <v-btn color="blue" @click="handleCancel">Cancel</v-btn>
-                <v-btn color="blue darken-1" @click="handleConfirm">Confirm</v-btn>
+                <v-btn color="blue" aria-label="Cancel" @click="handleCancel">Cancel</v-btn>
+                <v-btn color="blue darken-1" aria-label="Confirm" @click="handleConfirm">Confirm</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
