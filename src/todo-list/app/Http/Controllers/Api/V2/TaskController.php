@@ -19,9 +19,10 @@ class TaskController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Task::class);
-        
+        $tasks = auth()->user()->tasks()->paginate(10);
+        $tasks = new TaskResource($tasks);
         return $this->successResponse(
-            TaskResource::collection(auth()->user()->tasks()->get()),
+            $tasks,
             'Tasks retrieved successfully'
         );
     }
