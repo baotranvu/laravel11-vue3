@@ -3,9 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class TaskResource extends ResourceCollection
+class TaskResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,19 +15,9 @@ class TaskResource extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
-            'meta' => [
-                'current_page' => $this->currentPage(),
-                'last_page' => $this->lastPage(),
-                'per_page' => $this->perPage(),
-                'total' => $this->total(),
-            ],
-            'links' => [
-                'first' => $this->url(1),
-                'last' => $this->url($this->lastPage()),
-                'next' => $this->nextPageUrl(),
-                'prev' => $this->previousPageUrl(),
-            ]
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->created_at,
         ];
     }
 }

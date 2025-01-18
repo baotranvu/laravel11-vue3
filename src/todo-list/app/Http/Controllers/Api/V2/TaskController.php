@@ -20,9 +20,26 @@ class TaskController extends Controller
     {
         Gate::authorize('viewAny', Task::class);
         $tasks = auth()->user()->tasks()->paginate(10);
-        $tasks = new TaskResource($tasks);
+        $tasks = TaskResource::collection($tasks);
         return $this->successResponse(
-            $tasks,
+            [
+                'data' => $tasks,
+                'meta' => [
+                    'total' => $tasks->total(),
+                    'per_page' => $tasks->perPage(),
+                    'current_page' => $tasks->currentPage(),
+                    'last_page' => $tasks->lastPage(),
+                    'from' => $tasks->firstItem(),
+                    'to' => $tasks->lastItem(),
+                ],
+                'links' => [
+                    'self' => url()->current(),
+                    'first' => $tasks->url(1),
+                    'last' => $tasks->url($tasks->lastPage()),
+                    'prev' => $tasks->previousPageUrl(),
+                    'next' => $tasks->nextPageUrl(),
+                ],
+            ],
             'Tasks retrieved successfully'
         );
     }
