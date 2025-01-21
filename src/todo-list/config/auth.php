@@ -46,7 +46,6 @@ return [
             'provider' => 'users',
             'hash' => true,
             'expire' => 60,
-            'throttle' => 60,
             'rate_limit' => 60,
         ],
 
