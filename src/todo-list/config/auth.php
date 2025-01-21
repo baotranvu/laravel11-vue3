@@ -40,6 +40,15 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+            'hash' => true,
+            'expire' => 60,
+            'rate_limit' => 60,
+        ],
+
     ],
 
     /*
