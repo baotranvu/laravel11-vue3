@@ -1,22 +1,26 @@
+//import services
 import { TaskService } from '../services/TaskService';
+//import utils
 import { debounce } from 'lodash-es';
-import { ApiResponse } from '@/types/ApiResponse';
+import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+//import stores
 import { useTaskStore } from '@/stores/task';
 import { useGlobalStore } from '@/stores/global';
-import { storeToRefs } from 'pinia';
-import { Task } from '@/types/Task';
-import { ErrorType } from '@/types/ErrorType';
-import { ref } from 'vue';
+//import types
+import type { ApiResponse } from '@/types/ApiResponse';
+import type { Task } from '@/types/Task';
+import type { ErrorType } from '@/types/ErrorType';
+
 export default function useTaskCard() {
     const tasksStore = useTaskStore();
     const globalStore = useGlobalStore();
-    const taskService = new TaskService;
-    const { tasks } = storeToRefs(tasksStore);
+    const taskService = new TaskService();
+    const { tasks, meta } = storeToRefs(tasksStore);
     const { isLoading } = storeToRefs(globalStore);
     const DEFAULT_DEBOUNCE_DELAY = 300;
-
     const retryCount = ref(0);
-
+    
     const unknownError: ErrorType = {
         message: 'An unknown error occurred',
         status: 500
@@ -66,36 +70,19 @@ export default function useTaskCard() {
         }
     };
 
-    const getTasks = async () => {
-        
+    const getTasks = async (page: number = meta.value.current_page, itemsPerPage: number = meta.value.per_page) => {
         try {
             globalStore.setLoading(true);
             globalStore.setError(null);
-            const response = await taskService.all() as unknown as ApiResponse;
-            if(!response.success){
-                const error: ErrorType = {
-                    message: response.message,
-                    status: response.status
-                };
-                globalStore.setError(error);
-                throw error;
-            }
-            let tasks = response.data ?? [];
-            tasks = tasks.sort((a: { created_at: any; }, b: { created_at: any; }) => 
-                new Date(b.created_at ?? new Date()).getTime() - new Date(a.created_at ?? new Date()).getTime()
-            );
-            tasksStore.setTasks(tasks);
+            const response = await taskService.all(page, itemsPerPage) as unknown as ApiResponse;
+            if(!response.success) throw new Error(response.message);
+            const {data, meta} = response.data;
+            tasksStore.setTasks(data);
+            tasksStore.setMetaData(meta);
             globalStore.setError(null);
             retryCount.value = 0;
         } catch (err: any) {
-            globalStore.setError({
-                message: err.message ?? 'An unknown error occurred',
-                status: err.status
-            });
-            if (retryCount.value < 3) {
-                retryCount.value++;
-                setTimeout(getTasks, Math.pow(2, retryCount.value) * 1000);
-            }
+            globalStore.setError(err);
         } finally {
             globalStore.setLoading(false);
         }
@@ -142,13 +129,13 @@ export default function useTaskCard() {
     const debounceHandleAddTask = debounce(handleAddTask, DEFAULT_DEBOUNCE_DELAY);
     const debouncedToggleTaskCompletion = debounce(toggleTaskCompletion, DEFAULT_DEBOUNCE_DELAY);
     const debouncedUpdateTask = debounce(handleUpdateTask, DEFAULT_DEBOUNCE_DELAY);
-
+    
     return {
         debouncedToggleTaskCompletion,
         debouncedUpdateTask,
         handleDeleteTask,
         getTasks,
         debounceHandleAddTask,
-        tasks
+        tasks,
     };
 }

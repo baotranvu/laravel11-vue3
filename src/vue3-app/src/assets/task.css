@@ -2,15 +2,19 @@
     filter: none;
     opacity: 0.5;
 }
+
 .completed {
     color: #9ca3af;
     text-decoration: line-through;
+    opacity: 0.5;
 }
+
 .task-date {
     color: #6b7280;
     font-size: 11px;
     padding: 0 2px;
 }
+
 .editable-task {
     width: 100%;
     background-color: transparent;
@@ -18,16 +22,20 @@
     padding: 0;
     margin: 0;
 }
+
 .editable-task:focus {
     outline: none !important;
 }
+
 .edit-item input[type="text"] {
     color: #999;
 }
+
 .list-group-item:hover .task-actions {
     visibility: visible;
     opacity: 1;
 }
+
 .task-actions {
     position: absolute;
     top: 50%;
@@ -39,6 +47,7 @@
         visibility 0.2s,
         opacity 0.3s linear;
 }
+
 .btn-circle {
     width: 30px;
     height: 30px;
@@ -47,4 +56,27 @@
     text-align: center;
     font-size: 10px;
     line-height: 1.42857;
+}
+
+.task-title {
+    margin: 2px;
+    max-width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Optional: Adds "..." if the text overflows */
+}
+.task-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    height: 60px;
+}
+
+.toggle-task-completion {
+    cursor: pointer;
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    transition: background-color 0.2s;
 }

@@ -8,6 +8,6 @@ export class TaskService extends ResourceService<Task, TaskPayload> {
     super(`/${API_VERSION}/tasks`);
   }
   async changeTaskStatus(id: number) {
-    return api.patch(`api/${API_VERSION}/tasks/${id}/complete`);
+    return api.patch(`/${API_VERSION}/tasks/${id}/complete`);
   }
 }

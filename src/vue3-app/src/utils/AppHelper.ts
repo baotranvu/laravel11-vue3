@@ -10,6 +10,12 @@ export const redirectToErrorPage = (router: Router, error: ErrorType) => {
         case HTTP_STATUS_CODES.FORBIDDEN:
             router.push("/403");
             break;
+        case HTTP_STATUS_CODES.NOT_FOUND:
+            router.push("/404");
+            break;
+        case HTTP_STATUS_CODES.SERVER_ERROR:
+            router.push("/500");
+            break;
         default:
             break;
     }
