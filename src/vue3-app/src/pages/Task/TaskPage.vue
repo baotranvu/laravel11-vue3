@@ -30,10 +30,10 @@ const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
 const modalStore = useModalStore();
 const { isLoading } = storeToRefs(globalStore);
-const { getUncompletedTasks, meta } = storeToRefs(taskStore);
+const { getUncompletedTasks, meta, tasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const deletedTaskId = ref<number | null>(null);
-const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask } = useTaskCard();
 // Filter tasks based on completion status
 const filteredTasks = computed(() => {
     return showCompletedTasks.value ? tasks.value : getUncompletedTasks.value;
@@ -61,6 +61,9 @@ const handleToggleCompletedTasks = (isCompleted: boolean) => {
 };
 
 
+const perPageOptions = ref<number[]>([10, 15, 25, 50, 100]);
+const itemPerPage = ref<number>(10);
+
 const handleTableOptionsChange = (itemsPerPage: number) => {
     itemPerPage.value = itemsPerPage;
     getTasks(meta.value.current_page, itemPerPage.value);
@@ -78,8 +81,7 @@ const openDeleteModal = (taskId: number) => {
 const closeDeleteModal = () => {
     modalStore.closeModal(deleteModal.id);
 };
-const perPageOptions = ref<number[]>([10, 15, 25, 50, 100]);
-const itemPerPage = ref<number>(10);
+
 const deleteTask = () => {
     if (deletedTaskId.value !== null) {
         try {
@@ -133,6 +135,7 @@ const deleteTask = () => {
                                 :height="500"
                                 class="elevation-1"
                                 no-data-text="No tasks found. Add a new task above."
+                                :fixed-header="true"
                             >
                                 
                                 <template v-slot:item.is_completed="{ item }">

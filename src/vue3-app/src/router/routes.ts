@@ -23,6 +23,14 @@ export const routes: Array<RouteRecordRaw> = [
             requiresAuth: true,
         },
     },
+    {
+        path: '/task/:id',
+        name: 'task',
+        component: () => import('@/pages/Task/TaskDetailPage.vue'),
+        meta: {
+            requiresAuth: true,
+        },
+    },
     ...footerRoutes,
     ...errorRoutes,
     {

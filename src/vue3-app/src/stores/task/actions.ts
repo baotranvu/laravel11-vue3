@@ -14,5 +14,8 @@ export const actions = {
     setMetaData(this: TaskState, metaData: MetaData) {
         this.meta = metaData;
     },
+    setTask(this: TaskState, task: Task | null) {
+        this.task = task;
+    }
 
 } as const;

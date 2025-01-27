@@ -88,6 +88,23 @@ export default function useTaskCard() {
         }
     };
 
+    const getTaskById = async (taskId: number): Promise<Task | null> => {
+        try {
+            globalStore.setLoading(true);
+            globalStore.setError(null);
+            const response = await taskService.get(taskId) as unknown as ApiResponse;
+            if (!response.success) throw new Error(response.message);
+            tasksStore.setTask(response.data);
+            globalStore.setError(null);
+            return response.data;
+        } catch (err: any) {
+            globalStore.setError(err);
+            return null;
+        } finally {
+            globalStore.setLoading(false);
+        }
+    };
+
     const handleAddTask = async (name: string): Promise<void> => {
         if (isLoading.value) return;
 
@@ -135,7 +152,7 @@ export default function useTaskCard() {
         debouncedUpdateTask,
         handleDeleteTask,
         getTasks,
+        getTaskById,
         debounceHandleAddTask,
-        tasks,
     };
 }
