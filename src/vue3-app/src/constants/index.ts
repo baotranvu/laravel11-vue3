@@ -9,6 +9,6 @@ export const HTTP_STATUS_CODES = {
     SERVER_ERROR: 500,
 }
 
-export const API_BASE_URL = 'http://api.todo-list.com:8080/api';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://api.todo-list.com:8080/api';
 
 export const API_VERSION = 'v2';

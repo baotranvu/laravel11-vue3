@@ -42,6 +42,7 @@ const isEdit = ref<number | null>(null);
 const taskHeaders: DataTableHeader[] = [
     { title: 'ID', key: 'id', align: 'start', sortable: true },
     { title: 'Name', key: 'name', align: 'start', sortable: true },
+    { title: 'Completed', key: 'is_completed', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false }
 ]
 onMounted(async () => {
@@ -158,7 +159,7 @@ const deleteTask = () => {
                                     </div>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
-                                    <div class="d-flex flex-row">
+                                    <div class="d-flex flex-row justify-content-center align-items-center">
                                         <EditButton :itemId="item.id" @click="router.push(`/task/${item.id}`)" />
                                         <DeleteButton :itemId="item.id" @click="openDeleteModal(item.id)" />
                                     </div>

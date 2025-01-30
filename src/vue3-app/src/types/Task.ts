@@ -6,5 +6,7 @@ export interface Task {
     name: string;
     is_completed?: boolean;
     created_at?: string;
-    updated_at?: string;
+    start_date?: string | Date;
+    due_date?: string | Date;
+    progress?: number;
 }
