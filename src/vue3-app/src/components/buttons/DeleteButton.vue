@@ -16,6 +16,11 @@ const handleDelete = () => {
 </script>
 
 <template>
+    <!-- 
+        A small outlined button with a delete icon. 
+        Emits "item-delete" event when clicked.
+        :title and aria-label are set to "Delete item"
+    -->
    <v-btn 
         icon="mdi-delete"
         variant="outlined"

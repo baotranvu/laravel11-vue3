@@ -1,24 +1,50 @@
 <script setup lang="ts">
+//import utils
 import { ref, onMounted, computed, reactive } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
+//import composable
 import useTaskCard from '@/composables/useTaskCard';
-import TaskCard from '@/components/Task/TaskCard.vue';
+//import components
 import TaskCardSkeleton from '@/components/skeleton/TaskCardSkeleton.vue';
 import AddNewTaskInput from '@/components/Task/AddNewTaskInput.vue';
 import ToggleTaskButton from '@/components/Task/ToggleTaskButton.vue';
-import ErrorPage from '@/pages/ErrorPage.vue'
 import AppLayout from '@/components/AppLayout.vue';
+import AppModal from '@/components/AppModal.vue';
+//import store
 import { useGlobalStore } from '@/stores/global';
 import { useTaskStore } from '@/stores/task';
-import { storeToRefs } from 'pinia';
-import { VVirtualScroll } from 'vuetify/components';
+import { useModalStore } from '@/stores/modal';
+//import types
 import type { Modal } from '@/types/Modal';
+
+interface DataTableHeader {
+    title: string;
+    key: string;
+    align?: 'start' | 'center' | 'end';
+    sortable?: boolean;
+}
+
+const router = useRouter()
 const globalStore = useGlobalStore();
 const taskStore = useTaskStore();
-const { isLoading, hasError } = storeToRefs(globalStore);
-const { getUncompletedTasks } = storeToRefs(taskStore);
+const modalStore = useModalStore();
+const { isLoading } = storeToRefs(globalStore);
+const { getUncompletedTasks, meta, tasks } = storeToRefs(taskStore);
 const showCompletedTasks = ref(true);
 const deletedTaskId = ref<number | null>(null);
-const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask, tasks } = useTaskCard();
+const { debouncedToggleTaskCompletion, handleDeleteTask, getTasks, debounceHandleAddTask, debouncedUpdateTask } = useTaskCard();
+// Filter tasks based on completion status
+const filteredTasks = computed(() => {
+    return showCompletedTasks.value ? tasks.value : getUncompletedTasks.value;
+});
+const isEdit = ref<number | null>(null);
+const taskHeaders: DataTableHeader[] = [
+    { title: 'ID', key: 'id', align: 'start', sortable: true },
+    { title: 'Name', key: 'name', align: 'start', sortable: true },
+    { title: 'Completed', key: 'is_completed', sortable: false },
+    { title: 'Actions', key: 'actions', sortable: false }
+]
 onMounted(async () => {
     await getTasks();
 });
@@ -35,30 +61,26 @@ const handleToggleCompletedTasks = (isCompleted: boolean) => {
     showCompletedTasks.value = isCompleted;
 };
 
-const handleEditTask = (taskId: number, newName: string) => {
-    const taskToUpdate = tasks.value.find(task => task.id === taskId);
-    if (taskToUpdate) {
-        debouncedUpdateTask(taskId, { ...taskToUpdate, name: newName });
-    }
 
-};
+const perPageOptions = ref<number[]>([10, 15, 25, 50, 100]);
+const itemPerPage = ref<number>(10);
 
-const deleteModal : Modal = reactive({
+const handleTableOptionsChange = (itemsPerPage: number) => {
+    itemPerPage.value = itemsPerPage;
+    getTasks(meta.value.current_page, itemPerPage.value);
+}
+let deleteModal: Modal = reactive({
     id: 'delete-task-modal',
-    show: false,
     title: 'Delete task',
     message: 'Are you sure you want to delete this task?',
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
 });
-
 const openDeleteModal = (taskId: number) => {
-    deleteModal.show = true;
     deletedTaskId.value = taskId;
+    modalStore.openModal(deleteModal);
 };
 
 const closeDeleteModal = () => {
-    deleteModal.show = false;
+    modalStore.closeModal(deleteModal.id);
 };
 
 const deleteTask = () => {
@@ -73,71 +95,87 @@ const deleteTask = () => {
                 message: error.message
             });
         } finally {
-            deleteModal.show = false;
+            closeDeleteModal();
         }
     }
 };
-
-// Filter tasks based on completion status
-const filteredTasks = computed(() => {
-    return showCompletedTasks.value ? tasks.value : getUncompletedTasks.value;
-});
 </script>
 <template>
     <AppLayout>
-        <div class="container">
-            <!-- Display error state -->
-            <div v-if="hasError">
-                <ErrorPage />
-            </div>
-            <!-- Task list -->
-            <div v-else class="row">
-                <div class="col-md-8 offset-md-2">
+        <v-container>
+            <v-row>
+                <v-col cols="12" md="8" offset-md="2">
                     <!-- Add new Task -->
-                    <div>
-                        <AddNewTaskInput @add-task="addTask" />
-                        <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks" />
-                    </div>
+                    <v-row>
+                        <v-col cols="12">
+                            <AddNewTaskInput @add-task="addTask" />
+                            <ToggleTaskButton @toggle-completed-tasks="handleToggleCompletedTasks" />
+                        </v-col>
+                    </v-row>
                     <!-- Display loading state -->
-                    <div v-if="isLoading">
-                        <TaskCardSkeleton v-for="i in 3" :key="i" class="mt-4" />
-                    </div>
-                    <div v-else>
-                        <!-- List of tasks -->
-                        <v-virtual-scroll v-if="tasks && tasks.length > 0" :items="filteredTasks"
-                            :height="'calc(100vh - 400px)'">
-                            <template #default="{ item }">
-                                <TaskCard :task="item" @toggle-task-completion="debouncedToggleTaskCompletion"
-                                    @delete-task="openDeleteModal" @edit-task="handleEditTask" />
-                            </template>
-                        </v-virtual-scroll>
-                        <!-- No tasks message -->
-                        <div v-else>
-                            <p class="text-center">No tasks found. Add a new task above.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <v-dialog v-model="deleteModal.show" width="400" max-width="600" transition="dialog-top-transition"
-             variant="flat">
-            <v-card rounded="lg">
-                <v-card-title class="d-flex justify-content-between align-items-center">
-                    <div class="text-h5 text-medium-emphasis ps-2">
-                        {{ deleteModal.title }}
-                    </div>
-                    <v-btn icon="mdi-close" variant="text" @click="closeDeleteModal"></v-btn>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text>{{ deleteModal.message }}</v-card-text>
-                <v-divider></v-divider>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn variant="outlined" color="primary" @click="deleteTask">Confirm</v-btn>
-                    <v-btn variant="outlined" color="danger" @click="closeDeleteModal">Cancel</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                    <v-row v-if="isLoading">
+                        <v-col cols="12">
+                            <TaskCardSkeleton v-for="i in 3" :key="i" class="mt-4" />
+                        </v-col>
+                    </v-row>
+                    <v-row v-else>
+                        <v-col cols="12">
+                            <!-- List of tasks -->
+                            <v-data-table-server 
+                                v-model:items-per-page="itemPerPage" 
+                                :items-per-page-options="perPageOptions" 
+                                :items="filteredTasks"
+                                :items-length="meta.total" 
+                                :loading="isLoading" item-value="name" 
+                                @update:items-per-page="handleTableOptionsChange"
+                                @update:page="(page) => getTasks(page, itemPerPage)"
+                                :headers="taskHeaders" 
+                                :show-current-page="true"
+                                :show-filter="true"
+                                :page="meta.current_page"
+                                :height="500"
+                                class="elevation-1"
+                                no-data-text="No tasks found. Add a new task above."
+                                :fixed-header="true"
+                            >
+                                
+                                <template v-slot:item.is_completed="{ item }">
+                                    <input class="form-check-input mt-0 toggle-task-completion" type="checkbox"
+                                        role="switch" aria-label="Task completion checkbox" :checked="item.is_completed"
+                                        @change="debouncedToggleTaskCompletion(item)" />
+                                </template>
+                                <template v-slot:item.id="{ item }">
+                                    <router-link :to="`/task/${item.id}`">{{ item.id }}</router-link>
+                                </template>
+                                <template v-slot:item.name="{ item }">
+                                    <div class="ms-2 flex-grow-1 w-100 task-title" title="Double click the text to edit or remove" v-if="isEdit !== item.id" @dblclick="isEdit = item.id">
+                                        <span :class="{ 'completed': item.is_completed }">{{ item.name }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-start align-items-center" v-else>
+                                        <label for="new-task-input" class="visually-hidden">New task name</label>
+                                        <input id="new-task-input" type="text" class="form-control form-control-md padding-right-lg"
+                                            placeholder="Change the task name. Press enter to save." v-model.trim="item.name" @keyup.enter="debouncedUpdateTask(item.id, item)"
+                                            @keyup.escape="isEdit = null" maxlength="100" aria-describedby="task-input-help" required />
+                                    </div>
+                                </template>
+                                <template v-slot:item.actions="{ item }">
+                                    <div class="d-flex flex-row justify-content-center align-items-center">
+                                        <EditButton :itemId="item.id" @click="router.push(`/task/${item.id}`)" />
+                                        <DeleteButton :itemId="item.id" @click="openDeleteModal(item.id)" />
+                                    </div>
+                                </template>
+                                <template v-slot:loading>
+                                    <v-progress-linear indeterminate color="primary"></v-progress-linear>
+                                </template>
+                            </v-data-table-server>
+
+                        </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
+        </v-container>
+        <AppModal :handleConfirm="deleteTask" :handleCancel="closeDeleteModal" :id="deleteModal.id"
+            :title="deleteModal.title" :message="deleteModal.message" />
     </AppLayout>
 </template>
 <style scoped>

@@ -48,8 +48,14 @@ class ResourceService<T extends Resource, CreateDTO = Omit<T, 'id'>> {
     return response.data;
   }
 
-  async all(): Promise<T[]> {
-    const response = await api.get(this.resource);
+  async all(page?: number, itemsPerPage?: number): Promise<T[]> {
+    if (page !== undefined && page < 1) {
+      throw new Error('Page number must be greater than 0');
+    }
+    if (itemsPerPage !== undefined && itemsPerPage < 1) {
+      throw new Error('Items per page must be greater than 0');
+    }
+    const response = await api.get(this.resource, { params: { page: page ?? 1, per_page: itemsPerPage ?? 10 } });
     return response.data;
   }
 

@@ -1,47 +1,45 @@
 <template>
-    <div class="login-container">
-        <div class="login-box">
-            <h2>{{ isLogin ? 'Login' : 'Register' }}</h2>
-            <v-form @submit.prevent="handleSubmit">
-                <v-text-field
-                    v-if="!isLogin"
-                    v-model="formData.name"
-                    label="Name"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    v-model="formData.email"
-                    label="Email"
-                    :error-messages="!isEmailValid && formData.email ? 'Invalid email' : ''"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    v-model="formData.password"
-                    label="Password"
-                    type="password"
-                    required
-                ></v-text-field>
-                <v-text-field
-                    v-if="!isLogin"
-                    v-model="formData.password_confirmation"
-                    label="Confirm Password"
-                    type="password"
-                    required
-                ></v-text-field>
-                <div class="error" v-if="hasError">{{ error?.message }}</div>
-                <v-btn type="submit" color="primary" :disabled="isLoading" class="d-flex align-items-center">
-                    <v-progress-circular v-if="isLoading" indeterminate size="20" width="2"></v-progress-circular>
-                    {{ isLogin ? 'Login' : 'Register' }}
-                </v-btn>
-            </v-form>
-            <p class="toggle-form">
-                {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-                <a href="#" @click.prevent="toggleForm">
-                    {{ isLogin ? 'Register' : 'Login' }}
-                </a>
-            </p>
-        </div>
-    </div>
+    <AppLayout>
+        <template v-slot:default>
+            <v-container class="d-flex flex-column align-items-center" width="500">
+                <v-col cols="10">
+                    <div class="d-flex flex-column align-items-center">
+                        <h1 v-if="isLogin">Sign In</h1>
+                        <h1 v-else>Sign Up</h1>
+                    </div>
+                    <v-form @submit.prevent="handleSubmit">
+                        <v-text-field v-model="formData.email" label="Email" required></v-text-field>
+                        <v-text-field v-if="!isLogin" v-model="formData.name" label="Name" required></v-text-field>
+                        <v-text-field v-model="formData.password" label="Password" type="password"
+                            required></v-text-field>
+                        <v-text-field v-if="!isLogin" v-model="formData.password_confirmation" label="Confirm Password"
+                            type="password" required></v-text-field>
+                        <v-btn :loading="isLoading" color="primary" type="submit" block>Sign In</v-btn>
+                    </v-form>
+                    <v-alert v-if="error" type="error" class="mt-4">
+                        {{ error.message }}
+                    </v-alert>
+                </v-col>
+            </v-container>
+            <v-container class="d-flex flex-column align-items-center">
+                <v-row>
+                    <v-col>
+                        <v-card class="mt-4">
+                            <v-card-text>
+                                <p v-if="isLogin">Don't have an account? <a href="#" @click="toggleForm">Sign Up</a>
+                                </p>
+                                <p v-else>Already have an account? <a href="#" @click="toggleForm">Sign In</a></p>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <v-snackbar v-model="isRegistered" :timeout="2000" color="success" location="top">
+                    {{ message }}
+                </v-snackbar>
+            </v-container>
+
+        </template>
+    </AppLayout>
 </template>
 
 <script lang="ts" setup>
@@ -52,12 +50,14 @@ import { useGlobalStore } from '@/stores/global';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { validateEmail } from '@/utils/InputHelper';
+import AppLayout from '@/components/AppLayout.vue';
 const router = useRouter()
 const authStore = useAuthStore()
 import { storeToRefs } from 'pinia';
 const auth = useAuth()
 const globalStore = useGlobalStore()
 const { isLoading, error, hasError } = storeToRefs(globalStore)
+const isRegistered = ref(false)
 const isEmailValid = computed(() => {
     return validateEmail(formData.email)
 })
@@ -68,6 +68,8 @@ const formData = reactive({
     password: '',
     password_confirmation: ''
 })
+
+const message = ref('')
 
 const toggleForm = () => {
     isLogin.value = !isLogin.value
@@ -80,15 +82,21 @@ const resetFormData = () => {
     formData.email = ''
     formData.password = ''
     formData.password_confirmation = ''
+    if (message.value) {
+        setTimeout(() => {
+            message.value = ''
+            isRegistered.value = false
+        }, 5000)
+    }
 }
 
 const handleSubmit = async () => {
     globalStore.setError(null)
     if (!isEmailValid.value) {
-       globalStore.setError({ status: 400, message: 'Invalid email' })
+        globalStore.setError({ status: 400, message: 'Invalid email' })
         return
     }
-    
+
     if (!isLogin.value && formData.password !== formData.password_confirmation) {
         globalStore.setError({ status: 400, message: 'Passwords do not match' })
         return
@@ -97,15 +105,16 @@ const handleSubmit = async () => {
     try {
         if (isLogin.value) {
             await auth.login(formData as LoginCredentials)
-            if(!hasError.value) {
+            if (!hasError.value) {
                 router.push({ name: 'home' })
             }
         } else {
-           await auth.register(formData as RegisterData)
-           if(!hasError.value) {
-                alert('Registration successful')
+            await auth.register(formData as RegisterData)
+            if (!hasError.value) {
+                message.value = 'Registration successful'
+                isRegistered.value = true
                 toggleForm()
-           }
+            }
         }
     } catch (e: any) {
         const error = e?.response?.data

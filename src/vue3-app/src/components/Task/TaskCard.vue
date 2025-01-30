@@ -39,19 +39,20 @@ const handleCancel = (task: Task) => {
 <template>
     <div class="card mt-2 p-1" :class="{ 'bg-light': task.is_completed }" aria-label="Task card">
         <ul class="list-group list-group-flush">
-            <li class="list-group-item py-3 mx-2" style="cursor: pointer; user-select: none; height: 60px">
-                <div class="d-flex justify-content-start align-items-center" v-if="!isEdit" @dblclick="handleEdit(task)">
-                    <input class="form-check-input mt-0" type="checkbox" role="switch"
+            <li class="list-group-item py-3 mx-2 task-item" aria-label="Task item">
+                <div class="d-flex justify-content-between align-items-center" v-if="!isEdit" @dblclick="handleEdit(task)">
+                    <span class="me-2">{{ task.id }}</span>
+                    <input class="form-check-input mt-0 toggle-task-completion" type="checkbox" role="switch"
                         aria-label="Task completion checkbox" :checked="task.is_completed"
                         @change="toggleTaskCompletion(task)" />
-                    <div class="ms-2 flex-grow-1" title="Double click the text to edit or remove">
+                    <div class="ms-2 flex-grow-1 w-100 task-title" title="Double click the text to edit or remove">
                         <span :class="{ 'completed': task.is_completed }">{{ task.name }}</span>
                     </div>
-                    <div class="task-date">
+                    <div class="task-date" v-if="task.created_at && !$vuetify.display.mobile">
                         {{ new Intl.DateTimeFormat('default', {
                             dateStyle: 'medium',
                             timeStyle: 'short'
-                        }).format(task.created_at ? new Date(task.created_at) : new Date()) }}
+                        }).format(new Date(task.created_at)) }}
                     </div>
                 </div>
                 <div class="d-flex justify-content-start align-items-center" v-else>

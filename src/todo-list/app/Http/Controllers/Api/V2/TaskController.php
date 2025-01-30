@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -16,10 +17,10 @@ class TaskController extends Controller
      * Display a listing of the resource.
      */
     use ApiResponse;
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Task::class);
-        $tasks = auth()->user()->tasks()->paginate(10);
+        $tasks = auth()->user()->tasks()->paginate($request->input('per_page', 10));
         $tasks = TaskResource::collection($tasks);
         return $this->successResponse(
             [
